@@ -1,24 +1,14 @@
 <?php
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
+require_once "../backend/auth.php";
+requireLogin();
+require_once "../backend/task.php";
 
-require_once __DIR__ . '/../src/Database.php';
-
-$db = new Database();
-$conn = $db->getConnection();
+$tasks = getOpenTasks();
 ?>
-<!DOCTYPE html>
-<html>
-
-<head>
-    <meta charset="UTF-8">
-    <title>首頁</title>
-    <link rel="stylesheet" href="css/style.css">
-</head>
-
-<body>
-    <h1>專案首頁</h1>
-    <p>PHP + MariaDB 開發環境已啟動！</p>
-</body>
-
-</html>
+<h1>可接任務列表</h1>
+<?php foreach ($tasks as $t): ?>
+    <div>
+        <b><?= $t["title"] ?></b> | <?= $t["reward"] ?> 元 | by <?= $t["requester_name"] ?>
+        <a href="viewTask.php?id=<?= $t["task_id"] ?>">查看</a>
+    </div>
+<?php endforeach; ?>

@@ -1,3 +1,4 @@
 <?php
-    require_once "../backend/auth.php";
-    logoutUser();
+session_start();
+require_once "../backend/auth.php";
+logoutUser();

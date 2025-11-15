@@ -1,11 +1,9 @@
 <?php
-require_once "../backend/user.php";
+session_start();
 require_once "../backend/auth.php";
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
-    $user = findUserByEmail($_POST["email"]);
-    if ($user && password_verify($_POST["password"], $user["password_hash"])) {
-        $_SESSION["user"] = $user;
+    if (loginUser($_POST["email"], $_POST["password"])) {
         header("Location: index.php");
         exit;
     }
@@ -13,8 +11,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 }
 ?>
 <form method="post">
-    <input name="email" placeholder="Email">
-    <input name="password" type="password" placeholder="Password">
+    <input name="email" placeholder="Email" required>
+    <input name="password" type="password" placeholder="Password" required>
     <button>登入</button>
     <?php if (isset($error))
         echo "<p style='color:red'>$error</p>"; ?>

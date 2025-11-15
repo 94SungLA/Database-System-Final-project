@@ -1,11 +1,8 @@
 <?php
+require_once "../backend/auth.php";
+require_once "../backend/user.php";
+requireLogin();
 // 假設這些變數由你的後端提供
-$currentUser = [
-    "name"  => "王小明",
-    "phone" => "0912345678",
-    "email" => "test@example.com",
-    "isAdmin" => true
-];
 
 ?>
 <!DOCTYPE html>
@@ -33,7 +30,7 @@ $currentUser = [
             <div>
                 <h1 class="text-gray-900">跑腿任務平台</h1>
                 <p class="text-gray-600">
-                    <?= $currentUser['isAdmin'] ? "管理員控制台" : "輕鬆發布與接取任務" ?>
+                    <?= isAdmin() ? "管理員控制台" : "輕鬆發布與接取任務" ?>
                 </p>
             </div>
 
@@ -41,20 +38,20 @@ $currentUser = [
             <div class="flex items-center gap-3">
 
                 <!-- 使用者資訊 -->
-                <a href="?show-profile=1" 
+                <a href="userInfo.php" 
                    class="text-right hover:bg-gray-50 px-4 py-2 rounded-lg transition-colors block">
                     <div class="flex items-center gap-2">
 
-                        <?php if ($currentUser['isAdmin']): ?>
+                        <?php if (isAdmin()): ?>
                         <span class="px-2 py-1 bg-purple-100 text-purple-700 rounded-full text-sm">
                             管理員
                         </span>
                         <?php endif; ?>
 
                         <div>
-                            <p class="text-gray-900"><?= $currentUser['name'] ?></p>
+                            <p class="text-gray-900"><?= $_SESSION["user"]["name"] ?></p>
                             <p class="text-gray-600">
-                                <?= $currentUser['phone'] ?> · <?= $currentUser['email'] ?>
+                                <?= $_SESSION["user"]["phone"] ?> · <?= $_SESSION["user"]["email"] ?>
                             </p>
                         </div>
                     </div>
@@ -79,7 +76,7 @@ $currentUser = [
 
         <!-- Tabs -->
         <div class="flex gap-1 -mb-px">
-            <?php if (!empty($currentUser['isAdmin']) && $currentUser['isAdmin'] === true): ?>
+            <?php if (!empty(isAdmin()) && isAdmin() === true): ?>
                 <?php
                 // 管理員專屬 tab
                 $adminTab = ["id" => "admin", "label" => "管理面板"];
@@ -129,7 +126,7 @@ $currentUser = [
 <!-- Main Content -->
 <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
 
-<?php if ($currentUser['isAdmin'] != true): ?>
+<?php if (isAdmin() != true): ?>
 
     <?php if ($activeTab === 'taskboard'): ?>
         <div class="p-6 bg-white shadow rounded-xl">任務看板（TaskBoard）</div>
@@ -141,7 +138,7 @@ $currentUser = [
 
 <?php endif; ?>
 
-<?php if ($currentUser['isAdmin']): ?>
+<?php if (isAdmin()): ?>
     <div class="p-6 bg-white shadow rounded-xl">Admin Panel 管理者後台</div>
 <?php endif; ?>
 

@@ -3,6 +3,8 @@
 require_once "db.php";
 require_once "user.php"; // 這行讓 findUserByEmail 可用
 
+// 使用者登入
+// usage: loginUser($email, $password);
 function loginUser($email, $password)
 {
     $user = findUserByEmail($email);
@@ -15,6 +17,8 @@ function loginUser($email, $password)
     return true;
 }
 
+// 檢查是否已登入，未登入則導向登入頁
+// usage: requireLogin();
 function requireLogin()
 {
     if (!isset($_SESSION['user'])) {
@@ -23,11 +27,15 @@ function requireLogin()
     }
 }
 
+// 檢查是否為管理員
+// usage: isAdmin();
 function isAdmin()
 {
     return isset($_SESSION['user']) && $_SESSION['user']['is_admin'] == 1;
 }
 
+// 使用者登出
+// usage: logoutUser();
 function logoutUser()
 {
     session_destroy();

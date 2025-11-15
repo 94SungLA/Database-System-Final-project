@@ -1,6 +1,8 @@
 <?php
 require_once "db.php";
 
+// 透過 email 找使用者
+// usage: $user = findUserByEmail($email);
 function findUserByEmail($email)
 {
     global $pdo;
@@ -9,6 +11,8 @@ function findUserByEmail($email)
     return $stmt->fetch();
 }
 
+// 建立新使用者
+// usage: createUser($name, $email, $password, $phone);
 function createUser($name, $email, $password, $phone)
 {
     global $pdo;
@@ -16,6 +20,8 @@ function createUser($name, $email, $password, $phone)
     return $stmt->execute([$name, $email, password_hash($password, PASSWORD_BCRYPT), $phone]);
 }
 
+// 透過使用者ID取得使用者資料
+// usage: $user = getUserById($id);
 function getUserById($id)
 {
     global $pdo;
@@ -24,6 +30,8 @@ function getUserById($id)
     return $stmt->fetch();
 }
 
+// 更新使用者資料
+// usage: updateUserProfile($user_id, $name, $phone, $email);
 function updateUserProfile($user_id, $name, $phone, $email)
 {
     global $pdo;

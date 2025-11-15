@@ -1,6 +1,7 @@
 <?php
 require_once "../backend/auth.php";
 requireLogin();
+// var_dump($_SESSION);
 require_once "../backend/task.php";
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {

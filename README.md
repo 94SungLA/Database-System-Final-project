@@ -7,6 +7,7 @@
 - 雙方互評範例資料
 
 # 專案目錄結構
+```bash
 Database-System-Final-project/
 │── db/
 │   └── init.sql          ← 建表 + 初始假資料
@@ -34,3 +35,4 @@ Database-System-Final-project/
 │   └── logo.png          ← 之後要放 icon 用
 │
 └── README.md             ← 專案說明、環境設定、成員資訊
+```

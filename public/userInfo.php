@@ -1,25 +1,21 @@
 <?php
 session_start();
 
-// 處理表單送出
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $name  = $_POST['name'] ?? '';
-    $phone = $_POST['phone'] ?? '';
-    $email = $_POST['email'] ?? '';
+$newUserName = $_SESSION["user"]["name"];
+$newUserPhone = $_SESSION["user"]["phone"];
+$newEmail = $_SESSION["user"]["email"];
 
-    if ($name && $phone && $email) {
-        // 假設有 PDO $db，這裡是更新範例
-        /*
-        $stmt = $db->prepare("UPDATE users SET name = ?, phone = ?, email = ? WHERE id = ?");
-        $stmt->execute([$name, $phone, $email, $user['id']]);
-        */
-        echo "<p class='text-green-600 mb-2'>使用者資料已更新！</p>";
-        $user['name'] = $name;
-        $user['phone'] = $phone;
-        $user['email'] = $email;
-    } else {
+function updateAndGoBack($newUserName, $newPhone, $newEmail) {
+    // call update function
+    echo ($newEmail);
+    if ($newUserName == "" | $newPhone == "" | $newEmail == "") {
         echo "<p class='text-red-600 mb-2'>請填寫所有必填欄位。</p>";
+        return;
     }
+    else {
+        echo "<script>window.history.back();</script>";
+    }
+    exit;
 }
 ?>
 
@@ -58,7 +54,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
           type="text"
           name="name"
           required
-          value="<?= htmlspecialchars($_SESSION["user"]["name"]) ?>"
+          value="<?= htmlspecialchars($newUserName) ?>"
           class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600"
         >
       </div>
@@ -69,7 +65,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
           type="tel"
           name="phone"
           required
-          value="<?= htmlspecialchars($_SESSION["user"]["phone"]) ?>"
+          value="<?= htmlspecialchars($newUserPhone) ?>"
           class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600"
         >
       </div>
@@ -80,7 +76,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
           type="email"
           name="email"
           required
-          value="<?= htmlspecialchars($_SESSION["user"]["email"]) ?>"
+          value="<?= htmlspecialchars($newEmail) ?>"
           class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600"
         >
       </div>
@@ -94,7 +90,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
           取消
         </button>
         <button
-          type="submit"
+          type="button"
+          onclick="updateAndGoBack($newUserName, $newUserPhone, $newEmail)"
           class="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
         >
           儲存

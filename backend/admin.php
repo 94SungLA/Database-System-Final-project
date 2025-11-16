@@ -49,7 +49,11 @@ function adminGetAllUsers()
         throw new Exception("非管理員無權限");
     }
     global $pdo;
-    $stmt = $pdo->query("SELECT * FROM Users ORDER BY user_id ASC");
+    $stmt = $pdo->query("SELECT u.*, COALESCE(requester_stats.total_tasks, 0) AS tasksAsRequester, COALESCE(runner_stats.total_tasks, 0) AS tasksAsRunner
+                                FROM Users u
+                                LEFT JOIN ( SELECT requester_id, COUNT(*) AS total_tasks FROM Tasks GROUP BY requester_id ) AS requester_stats ON u.user_id = requester_stats.requester_id
+                                LEFT JOIN ( SELECT runner_id, COUNT(*) AS total_tasks FROM Tasks GROUP BY runner_id ) AS runner_stats ON u.user_id = runner_stats.runner_id
+                                order by u.user_id asc;");
     return $stmt->fetchAll();
 }
 

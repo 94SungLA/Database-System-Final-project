@@ -5,8 +5,20 @@
 
     // 給出 特定使用者 到彈出視窗 user-detail 內
     $selectedUser = null;
+    $userTaskRequesterComplete = 0;
+    $userTaskRunnerComplete = 0;
     if (isset($_POST['viewUserDetail'])) {
+        $userTaskRequesterComplete = $_POST['userTaskRequesterComplete'];
+        $userTaskRunnerComplete = $_POST['userTaskRunnerComplete'];
         $selectedUser = getUserById($_POST['user_id']);
+    }
+
+    // 在彈出視窗 user-detail 內 ban OR unban user
+    if (isset($_POST['banAndUnbanInUserDetail'])) {
+        $status = ($_POST['action'] === 'ban') ? 1 : 0;
+        adminSetUserStatus($_POST['user_id'], $status);
+        $users = adminGetAllUsers();
+        $selectedUser = null;
     }
 
     // ban OR unban user
@@ -21,9 +33,7 @@
         $selectedUser = null;
     }
 
-    echo '<pre>';
-    var_dump($users);
-    echo '</pre>';
+    $ratingAsNull = '(*´･д･)?';
 ?>
 
 <!-- Users Tab -->
@@ -67,7 +77,7 @@
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4 text-yellow-500">
                                     <path fill-rule="evenodd" d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.006 5.404.434c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.434 2.082-5.005Z" clip-rule="evenodd" />
                                 </svg>
-                                <?= $user['rating_as_runner'] ?>
+                                <?= $user['rating_as_runner'] !== null ? $user['rating_as_runner'] : $ratingAsNull ?>
                             </div>
                         </td>
                         <td class="px-6 py-4 text-left text-gray-700">
@@ -75,11 +85,11 @@
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4 text-yellow-500">
                                     <path fill-rule="evenodd" d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.006 5.404.434c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.434 2.082-5.005Z" clip-rule="evenodd" />
                                 </svg>
-                                <?= $user['rating_as_requester'] ?>
+                                <?= $user['rating_as_requester'] !== null ? $user['rating_as_requester'] : $ratingAsNull ?>
                             </div>
                         </td>
-                        <td class="px-6 py-4 text-gray-700"><?= $user['review_count_runner'] ?></td>
-                        <td class="px-6 py-4 text-gray-700"><?= $user['review_count_requester'] ?></td>
+                        <td class="px-6 py-4 text-gray-700"><?= $user['tasksAsRunner'] ?></td>
+                        <td class="px-6 py-4 text-gray-700"><?= $user['tasksAsRequester'] ?></td>
                         <td class="px-6 py-4">
                             <?php
                                 if ($user['is_banned'] === 0) {
@@ -99,6 +109,8 @@
                             <div class="flex gap-2">
                                 <form method="POST" style="display:inline;">
                                     <input type="hidden" name="user_id" value="<?= $user['user_id'] ?>">
+                                    <input type="hidden" name="userTaskRequesterComplete" value="<?= $user['tasksAsRequester'] ?>">
+                                    <input type="hidden" name="userTaskRunnerComplete" value="<?= $user['tasksAsRunner'] ?>">
                                     <button name="viewUserDetail" class="text-blue-600 hover:text-blue-700">查看</button>
                                 </form>
                                 <?php if ($user['is_banned'] == 0): ?>
@@ -137,7 +149,7 @@
                     <p class="text-gray-600">查看用戶完整資訊</p>
                 </div>
                 <form method="POST" style="display:inline;">
-                    <button name="closeUserDetail" class="text-gray-400 hover:text-gray-600">&times;</button>
+                    <button name="closeUserDetail" class="text-3xl text-gray-400 hover:text-4xl hover:font-bold hover:text-red-600 transition-all duration-200">&times;</button>
                 </form>
             </div>
 
@@ -206,18 +218,22 @@
                 <!-- Stats -->
                 <div class="grid grid-cols-3 gap-4 pt-6 border-t border-gray-200">
                     <div class="text-center">
-                        <div class="flex items-center justify-center gap-1 mb-1">
-                            <span class="text-yellow-500">★</span>
-                            <p class="text-gray-900"><?= $selectedUser['rating'] ?></p>
+                        <div class="flex flex-col items-center justify-center gap-1 mb-1">
+                            <span class="px-2 py-1 bg-green-100 text-green-700 rounded-full text-sm">
+                                工具人 : <?= $selectedUser['rating_as_runner'] !== null ? $selectedUser['rating_as_runner'] : $ratingAsNull ?>
+                            </span>
+                            <span class="ml-2 px-2 py-1 bg-blue-100 text-blue-700 rounded-full text-sm">
+                                委託人 : <?= $selectedUser['rating_as_requester'] !== null ? $selectedUser['rating_as_requester'] : $ratingAsNull ?>
+                            </span>
                         </div>
                         <p class="text-gray-600">評分</p>
                     </div>
                     <div class="text-center">
-                        <p class="text-gray-900"><?= $selectedUser['tasksCompleted'] ?></p>
+                        <p class="text-gray-900"><?= $userTaskRunnerComplete ?></p>
                         <p class="text-gray-600">完成任務</p>
                     </div>
                     <div class="text-center">
-                        <p class="text-gray-900"><?= $selectedUser['tasksPosted'] ?></p>
+                        <p class="text-gray-900"><?= $userTaskRequesterComplete ?></p>
                         <p class="text-gray-600">發布任務</p>
                     </div>
                 </div>
@@ -229,7 +245,7 @@
                         <?php if ($selectedUser['is_banned'] == 0): ?>
                             <input type="hidden" name="action" value="ban">
                             <button 
-                                type="submit" 
+                                name="banAndUnbanInUserDetail"
                                 class="w-full h-full py-2 rounded-lg bg-red-600 text-white hover:bg-red-700 flex items-center justify-center"
                                 style="border:none; cursor:pointer;"
                             >
@@ -238,7 +254,7 @@
                         <?php else: ?>
                             <input type="hidden" name="action" value="unban">
                             <button 
-                                type="submit" 
+                                name="banAndUnbanInUserDetail"
                                 class="w-full h-full py-2 rounded-lg bg-green-600 text-white hover:bg-green-700 flex items-center justify-center"
                                 style="border:none; cursor:pointer;"
                             >

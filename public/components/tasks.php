@@ -6,6 +6,7 @@ var_dump($tasks);
 
 $statusColors = [
     'pending' => 'bg-yellow-500',
+    'confirming' => 'bg-violet-500',
     'in_progress' => 'bg-blue-500',
     'completed' => 'bg-green-500',
     'cancelled' => 'bg-gray-500',
@@ -14,7 +15,8 @@ $statusColors = [
 
 function getStatusLabel($status) {
     return match($status) {
-        'pending' => '待接任務',
+        'open' => '待接單',
+        'confirming' => '待確認',
         'in_progress' => '進行中',
         'completed' => '已完成',
         'cancelled' => '已取消',
@@ -56,7 +58,7 @@ function getStatusLabel($status) {
                     <td class="px-6 py-4 text-gray-700">NT$ <?= number_format($task['reward']) ?></td>
                     <td class="px-6 py-4">
                         <div class="flex gap-2">
-                            <a href="view_task.php?id=<?= $task['id'] ?>" class="text-blue-600 hover:text-blue-700">查看</a>
+                            <a href="view_task.php?id=<?= $task['task_id'] ?>" class="text-blue-600 hover:text-blue-700">查看</a>
                         </div>
                     </td>
                 </tr>

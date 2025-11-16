@@ -13,6 +13,17 @@ function adminGetTasksCount() {
     return $stmt->fetchAll();
 }
 
+// Ban 或 Unban 使用者 (管理者專用)
+// usage: $users = adminSetUserStatus($user_id, $status)
+function adminSetUserStatus($user_id, $status) {
+    if (!isAdmin()) {
+        throw new Exception("非管理員無權限");
+    }
+    global $pdo;
+    $stmt = $pdo->prepare("UPDATE Users as u SET u.is_banned = ? WHERE u.user_id=?");
+    $stmt->execute([$status, $user_id]);
+}
+
 // 取得所有任務（管理員專用）
 // usage: $tasks = adminGetAllTasks();
 function adminGetAllTasks()

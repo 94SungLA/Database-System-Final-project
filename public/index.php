@@ -140,7 +140,9 @@ requireLogin();
 <?php endif; ?>
 
 <?php if (isAdmin()): ?>
-    <div class="p-6 bg-white shadow rounded-xl">Admin Panel 管理者後台</div>
+    <?php if ($activeTab === 'admin')
+                include "admin_panel.php"; ?>
+
 <?php endif; ?>
 
 </main>

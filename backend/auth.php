@@ -14,6 +14,7 @@ function loginUser($email, $password)
         return false;
 
     $_SESSION["user"] = $user;
+    $_SESSION['logged_in'] = true;
     return true;
 }
 

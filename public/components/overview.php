@@ -18,7 +18,7 @@
         <h3 class="text-gray-900 mb-4">熱門任務類別</h3>
 
         <div class="space-y-3">
-            <?php foreach ($tagStats as $stat): 
+            <?php foreach ($tagStats as $stat):
                 $percentage = $stat['Total'] > 0 ? $stat['num'] / $stat['Total'] * 100 : 0;
             ?>
             <div class="flex items-center justify-between">

@@ -38,79 +38,19 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 <head>
     <meta charset="UTF-8">
     <title>登入</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-            color: #333;
-        }
-
-        form {
-            background: white;
-            padding: 40px;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            width: 100%;
-            max-width: 400px;
-            text-align: center;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: bold;
-            color: #555;
-        }
-
-        input[type="email"],
-        input[type="password"] {
-            width: 100%;
-            padding: 12px;
-            margin-bottom: 20px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            box-sizing: border-box;
-            font-size: 16px;
-        }
-
-        button {
-            width: 100%;
-            padding: 12px;
-            background: #667eea;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            font-size: 16px;
-            cursor: pointer;
-            transition: background 0.3s;
-        }
-
-        button:hover {
-            background: #5a6fd8;
-        }
-
-        p {
-            margin-top: 20px;
-            font-size: 14px;
-        }
-    </style>
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
 
-<body>
-    <form method="post">
-        <label for="email">Email:</label>
-        <input id="email" name="email" type="email" placeholder="Email" required>
-        <label for="password">密碼:</label>
-        <input id="password" name="password" type="password" placeholder="Password" required>
+<body class="font-sans bg-gradient-to-br from-blue-500 to-purple-600 flex justify-center items-center h-screen m-0 text-gray-800">
+    <form method="post" class="bg-white p-10 rounded-lg shadow-lg w-full max-w-md text-center">
+        <label for="email" class="block mb-2 font-bold text-gray-700">Email:</label>
+        <input id="email" name="email" type="email" placeholder="Email" required class="w-full p-3 mb-5 border border-gray-300 rounded-md box-border text-base">
+        <label for="password" class="block mb-2 font-bold text-gray-700">密碼:</label>
+        <input id="password" name="password" type="password" placeholder="Password" required class="w-full p-3 mb-5 border border-gray-300 rounded-md box-border text-base">
         <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['csrf_token']; ?>">
-        <button type="submit">登入</button>
-        <?php if (!empty($error)) echo "<p style='color:red'>$error</p>"; ?>
-        <p>沒有帳號？<a href="register.php" style="color: #667eea; text-decoration: none;">註冊</a></p>
+        <button type="submit" class="w-full p-3 bg-blue-500 text-white border-none rounded-md text-base cursor-pointer transition-colors hover:bg-blue-600">登入</button>
+        <?php if (!empty($error)) echo "<p class='mt-5 text-sm text-red-500'>$error</p>"; ?>
+        <p class="mt-5 text-sm">沒有帳號？<a href="register.php" class="text-blue-500 no-underline">註冊</a></p>
     </form>
 </body>
 

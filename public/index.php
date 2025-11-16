@@ -89,7 +89,7 @@ requireLogin();
                     <?= $isActive
                         ? 'border-blue-600 text-blue-600'
                         : 'border-transparent text-gray-600 hover:text-gray-900 hover:border-gray-300'
-                        ?>">
+                    ?>">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                             stroke="currentColor" class="size-6">
                             <path stroke-linecap="round" stroke-linejoin="round"
@@ -110,12 +110,12 @@ requireLogin();
                         $activeTab = $_GET['tab'] ?? 'taskboard';
                         $isMyTasksSection = in_array($activeTab, ['mytasks', 'published', 'accepted']);
                         $isActive = ($tab['id'] === 'mytasks' && $isMyTasksSection) || $activeTab === $tab['id'];
-                        ?>
+                    ?>
                         <a href="?tab=<?= $tab['id'] ?>" class="flex items-center gap-2 px-6 py-3 border-b-2 transition-colors
                         <?= $isActive
                             ? 'border-blue-600 text-blue-600'
                             : 'border-transparent text-gray-600 hover:text-gray-900 hover:border-gray-300'
-                            ?>">
+                        ?>">
                             <!-- Icon -->
                             <?= $tab['icon'] ?>
                             <?= $tab['label'] ?>
@@ -140,7 +140,6 @@ requireLogin();
                         發布新任務
                     </a>
                 </div>
-                <div class="p-6 bg-white shadow rounded-xl">任務看板（TaskBoard）</div>
             <?php endif; ?>
 
             <?php
@@ -156,7 +155,7 @@ requireLogin();
 
         <?php if (isAdmin()): ?>
             <?php if ($activeTab === 'admin')
-                        include "admin_panel.php"; ?>
+                include "admin_panel.php"; ?>
 
         <?php endif; ?>
 

@@ -1,7 +1,7 @@
 -- Database create
 DROP DATABASE IF EXISTS seavice;
 
-CREATE DATABASE seavice DEFAULT CHARSET utf8mb4;
+CREATE DATABASE seavice DEFAULT CHARSET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 USE seavice;
 
@@ -19,33 +19,49 @@ CREATE TABLE
         rating_as_runner DECIMAL(2, 1) DEFAULT NULL,
         review_count_requester INT DEFAULT 0,
         review_count_runner INT DEFAULT 0,
-        is_admin BOOLEAN DEFAULT FALSE
+        is_admin BOOLEAN DEFAULT FALSE,
+        is_banned BOOLEAN DEFAULT FALSE,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP
     ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci;
 
 -- default users
 INSERT INTO
-    Users (name, email, password_hash, phone, is_admin)
+    Users (
+        name,
+        email,
+        password_hash,
+        phone,
+        is_admin,
+        is_banned,
+        created_at
+    )
 VALUES
     (
         '小美',
         'mei@example.com',
         '$2a$10$8uVwqZ8sHcL4eD3lXjG1qO9wT0uABF4MJabc123xyz',
         '0911222333',
-        FALSE
+        FALSE,
+        FALSE,
+        CURRENT_TIMESTAMP
     ),
     (
         '阿強',
         'qiang@example.com',
         '$2a$10$ycZ2C9e8HoQvF.7YJKsZ2C3dNqC.2LxG8f9Qwe56tU',
         '0922333444',
-        FALSE
+        FALSE,
+        FALSE,
+        CURRENT_TIMESTAMP
     ),
     (
         '老王 (管理員)',
         'admin@example.com',
         '$2a$10$qWx8zV9sHcL4eD3lKjF1pN8qZ0aB4CD7EfGhIjKlMn',
         '0933444555',
-        TRUE
+        TRUE,
+        FALSE,
+        CURRENT_TIMESTAMP
     );
 
 -- -----------------------------
@@ -67,13 +83,14 @@ CREATE TABLE
         ) DEFAULT 'open',
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
         deadline DATETIME,
+        location_tags VARCHAR(255) DEFAULT NULL, -- 新增欄位以儲存地點標籤
+        completed_at DATETIME DEFAULT NULL, -- 新增欄位以儲存任務完成時間
         requester_id INT NOT NULL,
         runner_id INT,
         FOREIGN KEY (requester_id) REFERENCES Users (user_id),
         FOREIGN KEY (runner_id) REFERENCES Users (user_id)
     ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci;
 
--- sample tasks
 INSERT INTO
     Tasks (
         title,
@@ -83,7 +100,8 @@ INSERT INTO
         status,
         requester_id,
         runner_id,
-        deadline
+        deadline,
+        location_tags
     )
 VALUES
     (
@@ -94,7 +112,8 @@ VALUES
         'completed',
         1,
         2,
-        '2025-11-09 18:00'
+        '2025-11-09 18:00',
+        '基隆, 校門口, 飲料店'
     ),
     (
         '幫我寄信到郵局',
@@ -104,7 +123,8 @@ VALUES
         'open',
         2,
         NULL,
-        '2025-11-10 15:00'
+        '2025-11-10 15:00',
+        '基隆, 郵局'
     ),
     (
         '幫我拿包裹',
@@ -114,7 +134,8 @@ VALUES
         'confirming',
         1,
         2,
-        '2025-11-09 19:00'
+        '2025-11-09 19:00',
+        '宿舍, 超商'
     );
 
 -- -----------------------------

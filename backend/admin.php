@@ -2,6 +2,17 @@
 require_once "db.php";
 require_once "auth.php";
 
+// 算出個別任務占比 (管理員專用)
+// usage: $tasksCnt = adminGetTasksCount();
+function adminGetTasksCount() {
+    if (!isAdmin()) {
+        throw new Exception("非管理員無權限");
+    }
+    global $pdo;
+    $stmt = $pdo->query ("SELECT t.tags AS tag, COUNT(t.task_id) AS num, SUM(COUNT(t.task_id)) OVER() AS Total FROM Tasks t GROUP BY t.tags;");
+    return $stmt->fetchAll();
+}
+
 // 取得所有任務（管理員專用）
 // usage: $tasks = adminGetAllTasks();
 function adminGetAllTasks()
@@ -10,9 +21,11 @@ function adminGetAllTasks()
         throw new Exception("非管理員無權限");
     }
     global $pdo;
-    $stmt = $pdo->query("SELECT t.*, u.name AS requester_name
+    $stmt = $pdo->query("SELECT t.*, u.name AS requester_name, 
+                                            r.name AS runner_name
                          FROM Tasks t
                          JOIN Users u ON u.user_id = t.requester_id
+                         JOIN Users r ON r.user_id = t.runner_id
                          ORDER BY created_at DESC");
     return $stmt->fetchAll();
 }

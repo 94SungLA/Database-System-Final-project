@@ -16,7 +16,7 @@ function findUserByEmail($email)
 function createUser($name, $email, $password, $phone)
 {
     global $pdo;
-    $stmt = $pdo->prepare("INSERT INTO Users (name, email, password_hash, phone) VALUES (?, ?, ?, ?)");
+    $stmt = $pdo->prepare("INSERT INTO Users (name, email, password_hash, phone, created_at) VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP)");
     return $stmt->execute([$name, $email, password_hash($password, PASSWORD_BCRYPT), $phone]);
 }
 

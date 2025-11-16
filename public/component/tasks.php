@@ -44,8 +44,8 @@ function getStatusLabel($status) {
                     <td class="px-6 py-4 text-gray-700"><?= htmlspecialchars($task['tags']) ?></td>
                     <td class="px-6 py-4 text-gray-700"><?= htmlspecialchars($task['requester_name']) ?></td>
                     <td class="px-6 py-4 text-gray-700">
-                        <span class="<?= $task['runner'] ? '' : 'italic text-gray-400' ?>">
-                            <?= $task['runner'] ?: '-' ?>
+                        <span class="<?= $task['runner_name'] ? '' : 'italic text-gray-400' ?>">
+                            <?= $task['runner_name'] ?: '-' ?>
                         </span>
                     </td>
                     <td class="px-6 py-4">

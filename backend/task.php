@@ -5,7 +5,7 @@ require_once "db.php";
 function getOpenTasks()
 {
     global $pdo;
-    $stmt = $pdo->query("SELECT t.*, u.name AS requester_name
+    $stmt = $pdo->query("SELECT t.*, u.name AS requester_name, u.rating_as_requester
                          FROM Tasks t
                          JOIN Users u ON u.user_id = t.requester_id
                          WHERE status='open'
@@ -25,12 +25,12 @@ function getTaskById($id)
 
 // 建立新任務
 // usage: createTask($title, $desc, $tags, $reward, $deadline, $requester_id);
-function createTask($title, $desc, $tags, $reward, $deadline, $requester_id)
+function createTask($title, $desc, $tags, $reward, $deadline, $location_tags, $requester_id)
 {
     global $pdo;
-    $stmt = $pdo->prepare("INSERT INTO Tasks (title, description, tags, reward, deadline, requester_id)
-                           VALUES (?, ?, ?, ?, ?, ?)");
-    return $stmt->execute([$title, $desc, $tags, $reward, $deadline, $requester_id]);
+    $stmt = $pdo->prepare("INSERT INTO Tasks (title, description, tags, reward, deadline, location_tags, requester_id)
+                           VALUES (?, ?, ?, ?, ?, ?, ?)");
+    return $stmt->execute([$title, $desc, $tags, $reward, $deadline, $location_tags, $requester_id]);
 }
 
 // 透過請求者ID取得其所有任務
@@ -38,8 +38,16 @@ function createTask($title, $desc, $tags, $reward, $deadline, $requester_id)
 function getTasksByRequesterID($requester_id)
 {
     global $pdo;
-    $stmt = $pdo->prepare("SELECT * FROM Tasks WHERE requester_id=? ORDER BY created_at DESC");
-    $stmt->execute([$requester_id]);
+    $stmt = $pdo->prepare("SELECT t.*, 
+                                  r.name as runner_name,
+                                  rev.rating, 
+                                  rev.comment
+                           FROM Tasks t
+                           LEFT JOIN Users r ON t.runner_id = r.user_id
+                           LEFT JOIN Reviews rev ON t.task_id = rev.task_id AND rev.reviewer_id = ?
+                           WHERE t.requester_id=? 
+                           ORDER BY t.created_at DESC");
+    $stmt->execute([$requester_id, $requester_id]);
     return $stmt->fetchAll();
 }
 
@@ -48,8 +56,17 @@ function getTasksByRequesterID($requester_id)
 function getTasksByRunnerID($runner_id)
 {
     global $pdo;
-    $stmt = $pdo->prepare("SELECT * FROM Tasks WHERE runner_id=? ORDER BY created_at DESC");
-    $stmt->execute([$runner_id]);
+    $stmt = $pdo->prepare("SELECT t.*, 
+                                  req.name as requester_name, 
+                                  req.rating_as_requester,
+                                  rev.rating, 
+                                  rev.comment
+                           FROM Tasks t
+                           JOIN Users req ON t.requester_id = req.user_id
+                           LEFT JOIN Reviews rev ON t.task_id = rev.task_id AND rev.reviewer_id = ?
+                           WHERE t.runner_id=? 
+                           ORDER BY t.created_at DESC");
+    $stmt->execute([$runner_id, $runner_id]);
     return $stmt->fetchAll();
 }
 
@@ -100,8 +117,9 @@ function completeTask($task_id, $runner_id)
 {
     global $pdo;
     $stmt = $pdo->prepare("UPDATE Tasks
-                                  SET status = 'completed'
-                                  WHERE task_id = ? AND runner_id = ? AND status = 'in_progress';");
+                                  SET status = 'completed',
+                                  completed_at = NOW()
+                                  WHERE task_id = ? AND runner_id = ?;");
     return $stmt->execute([$task_id, $runner_id]);
 }
 

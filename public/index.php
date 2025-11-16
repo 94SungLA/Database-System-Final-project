@@ -131,6 +131,14 @@ requireLogin();
         <?php if (!isAdmin()): ?>
 
             <?php if ($activeTab === 'taskboard'): ?>
+                <div class="mb-4">
+                    <a href="create_task.php" class="inline-flex items-center px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 mr-2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                        </svg>
+                        發布新任務
+                    </a>
+                </div>
                 <div class="p-6 bg-white shadow rounded-xl">任務看板（TaskBoard）</div>
             <?php endif; ?>
 

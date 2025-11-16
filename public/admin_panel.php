@@ -1,155 +1,126 @@
 <?php
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
+// ====== Data loading interface ======
+// 你日後自己實作 SQL
+function getStats() { return []; }
+function getUsers() { return []; }
+function getTasks() { return []; }
 
-require_once __DIR__ . '/../src/Database.php';
+// 取得資料
+$stats = getStats();
+$users = getUsers();
+$tasks = getTasks();
+?>
 
-$db = new Database();
-$conn = $db->getConnection();
+<?php
+    $adminActiveTab = null;
+    $stats = [
+        [
+            'label' => '總用戶數',
+            'value' => count($users),
+            'icon' => '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6"><path stroke-linecap="round" stroke-linejoin="round" d="M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z" /></svg>',
+            'color' => 'bg-blue-500',
+        ],
+        [
+            'label' => '進行中任務',
+            'value' => count(array_filter($tasks, function($t) { return $t['status'] === 'in_progress'; })),
+            'icon' => '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 6.75h12M8.25 12h12m-12 5.25h12M3.75 6.75h.007v.008H3.75V6.75Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0ZM3.75 12h.007v.008H3.75V12Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm-.375 5.25h.007v.008H3.75v-.008Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z" /></svg>',
+            'color' => 'bg-green-500',
+        ],
+        [
+            'label' => '今日完成',
+            'value' => count(array_filter($tasks, function($t) { return $t['status'] === 'completed'; })),
+            'icon' => '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6"><path stroke-linecap="round" stroke-linejoin="round" d="M11.35 3.836c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 0 0 .75-.75 2.25 2.25 0 0 0-.1-.664m-5.8 0A2.251 2.251 0 0 1 13.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m8.9-4.414c.376.023.75.05 1.124.08 1.131.094 1.976 1.057 1.976 2.192V16.5A2.25 2.25 0 0 1 18 18.75h-2.25m-7.5-10.5H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V18.75m-7.5-10.5h6.375c.621 0 1.125.504 1.125 1.125v9.375m-8.25-3 1.5 1.5 3-3.75" /></svg>',
+            'color' => 'bg-purple-500',
+        ],
+    ];
 ?>
 
 <!DOCTYPE html>
-<html lang="zh-tw">
+<html lang="zh-Hant">
 <head>
-    <meta charset="UTF-8">
-    <title>Admin Panel (PHP)</title>
-    <link rel="stylesheet"
-          href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <meta charset="UTF-8" />
+    <title>管理員面板</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/heroicons@2.0.13"></script>
 </head>
 
-<body class="p-4">
+<body class="bg-gray-100">
 
-<div class="container">
-    <h1 class="mb-4">管理者後台</h1>
+<div class="mb-6">
+    <h2 class="text-gray-900 mb-2">管理員面板</h2>
+    <p class="text-gray-600">監控平台活動與用戶狀態</p>
+</div>
 
-    <!-- 搜尋 -->
-    <form class="d-flex mb-3">
-        <input type="text" name="search" class="form-control" placeholder="搜尋名稱或 Email"
-               value="<?= htmlspecialchars($search) ?>">
-        <button class="btn btn-primary ms-2">搜尋</button>
-    </form>
+<!-- Stats Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
 
-    <!-- Add User Button -->
-    <button class="btn btn-success mb-3" data-bs-toggle="modal" data-bs-target="#addUserModal">
-        新增使用者
-    </button>
+    <?php foreach ($stats as $index => $stat): ?>
+        <div class="bg-white rounded-lg border border-gray-200 p-6">
+            <div class="flex items-center gap-3">
+                <div class="<?= $stat['color'] ?> w-12 h-12 rounded-lg flex items-center justify-center">
+                    <!-- icon -->
+                    <?= $stat['icon'] ?>
+                </div>
 
-    <!-- Users Table -->
-    <table class="table table-bordered table-striped">
-        <thead>
-        <tr>
-            <th>ID</th>
-            <th>姓名</th>
-            <th>Email</th>
-            <th>狀態</th>
-            <th>角色</th>
-            <th>操作</th>
-        </tr>
-        </thead>
-        <tbody>
-
-        <?php while ($row = $result->fetch_assoc()): ?>
-        <tr>
-            <td><?= $row['id'] ?></td>
-            <td><?= htmlspecialchars($row['name']) ?></td>
-            <td><?= htmlspecialchars($row['email']) ?></td>
-            <td><?= $row['status'] ?></td>
-            <td><?= $row['role'] ?></td>
-            <td>
-
-                <!-- Edit Button -->
-                <button class="btn btn-warning btn-sm"
-                        data-bs-toggle="modal"
-                        data-bs-target="#editUserModal<?= $row['id'] ?>">
-                    編輯
-                </button>
-
-                <!-- Delete -->
-                <a href="?delete=<?= $row['id'] ?>"
-                   class="btn btn-danger btn-sm"
-                   onclick="return confirm('確定要刪除嗎？');">
-                    刪除
-                </a>
-            </td>
-        </tr>
-
-        <!-- Edit Modal -->
-        <div class="modal fade" id="editUserModal<?= $row['id'] ?>" tabindex="-1">
-            <div class="modal-dialog">
-                <form method="POST" class="modal-content">
-                    <input type="hidden" name="id" value="<?= $row['id'] ?>">
-
-                    <div class="modal-header">
-                        <h5 class="modal-title">編輯使用者</h5>
-                        <button class="btn-close" data-bs-dismiss="modal"></button>
-                    </div>
-
-                    <div class="modal-body">
-                        <label>姓名</label>
-                        <input name="name" class="form-control mb-2" value="<?= htmlspecialchars($row['name']) ?>">
-
-                        <label>Email</label>
-                        <input name="email" class="form-control mb-2" value="<?= htmlspecialchars($row['email']) ?>">
-
-                        <label>狀態</label>
-                        <select name="status" class="form-control mb-2">
-                            <option value="Active" <?= $row['status']=="Active"?"selected":"" ?>>Active</option>
-                            <option value="Inactive" <?= $row['status']=="Inactive"?"selected":"" ?>>Inactive</option>
-                        </select>
-
-                        <label>角色</label>
-                        <input name="role" class="form-control" value="<?= $row['role'] ?>">
-                    </div>
-
-                    <div class="modal-footer">
-                        <button name="edit" class="btn btn-primary">儲存</button>
-                    </div>
-                </form>
+                <div>
+                    <p class="text-gray-600"><?= $stat['label'] ?></p>
+                    <p class="text-gray-900"><?= $stat['value'] ?></p>
+                </div>
             </div>
         </div>
+    <?php endforeach; ?>
 
-        <?php endwhile; ?>
-
-        </tbody>
-    </table>
 </div>
 
-<!-- Add User Modal -->
-<div class="modal fade" id="addUserModal" tabindex="-1">
-    <div class="modal-dialog">
-        <form method="POST" class="modal-content">
+<!-- Tabs -->
+<?php $adminActiveTab = $_GET['adminTab'] ?? 'overview';  ?>
 
-            <div class="modal-header">
-                <h5 class="modal-title">新增使用者</h5>
-                <button class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
+<!-- Tabs -->
+<div class="flex gap-2 mb-8">
 
-            <div class="modal-body">
-                <label>姓名</label>
-                <input name="name" class="form-control mb-2">
+    <!-- 總覽 -->
+    <a href="?adminTab=overview">
+        <button
+            class="px-4 py-2 rounded-lg transition-colors 
+            <?php echo $adminActiveTab === 'overview'
+                ? 'bg-blue-600 text-white'
+                : 'bg-white text-gray-700 border border-gray-300 hover:border-blue-600'; ?>">
+            總覽
+        </button>
+    </a>
 
-                <label>Email</label>
-                <input name="email" class="form-control mb-2">
+    <!-- 用戶管理 -->
+    <a href="?adminTab=users">
+        <button
+            class="px-4 py-2 rounded-lg transition-colors
+            <?php echo $adminActiveTab === 'users'
+                ? 'bg-blue-600 text-white'
+                : 'bg-white text-gray-700 border border-gray-300 hover:border-blue-600'; ?>">
+            用戶管理
+        </button>
+    </a>
 
-                <label>狀態</label>
-                <select name="status" class="form-control mb-2">
-                    <option>Active</option>
-                    <option>Inactive</option>
-                </select>
+    <!-- 任務管理 -->
+    <a href="?adminTab=tasks">
+        <button
+            class="px-4 py-2 rounded-lg transition-colors
+            <?php echo $adminActiveTab === 'tasks'
+                ? 'bg-blue-600 text-white'
+                : 'bg-white text-gray-700 border border-gray-300 hover:border-blue-600'; ?>">
+            任務管理
+        </button>
+    </a>
 
-                <label>角色</label>
-                <input name="role" class="form-control">
-            </div>
-
-            <div class="modal-footer">
-                <button name="add" class="btn btn-success">新增</button>
-            </div>
-
-        </form>
-    </div>
 </div>
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
-</body>
-</html>
+<!-- Overview -->
+<?php
+    if ($adminActiveTab === 'overview') {
+        include './components/overview.php';
+    }
+    elseif ($adminActiveTab === 'users') {
+        include './components/users.php';
+    }
+    elseif ($adminActiveTab === 'tasks') {
+        include './components/tasks.php';
+    }
+?>

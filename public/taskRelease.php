@@ -5,9 +5,24 @@ requireLogin();
 require_once "../backend/task.php";
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
-    createTask($_POST["title"], $_POST["desc"], $_POST["tags"], $_POST["reward"], $_POST["deadline"], $_SESSION["user"]["user_id"]);
-    header("Location: index.php");
-    exit;
+    // 驗證輸入
+    $title = trim($_POST["title"]);
+    $desc = trim($_POST["desc"]);
+    $tags = $_POST["tags"];
+    $reward = (int)$_POST["reward"];
+    $deadline = $_POST["deadline"];
+
+    if (empty($title) || strlen($title) > 100) {
+        $error = "標題必填且不超過100字元";
+    } elseif ($reward <= 0) {
+        $error = "酬勞必須為正整數";
+    } elseif (strtotime($deadline) <= time()) {
+        $error = "截止時間必須為未來";
+    } else {
+        createTask($title, $desc, $tags, $reward, $deadline, $_SESSION["user"]["user_id"]);
+        header("Location: index.php");
+        exit;
+    }
 }
 ?>
 <form method="post">

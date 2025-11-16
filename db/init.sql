@@ -51,11 +51,11 @@ VALUES
         '$2a$10$ycZ2C9e8HoQvF.7YJKsZ2C3dNqC.2LxG8f9Qwe56tU',
         '0922333444',
         FALSE,
-        FALSE,
+        TRUE,
         CURRENT_TIMESTAMP
     ),
     (
-        '老王 (管理員)',
+        '老王',
         'admin@example.com',
         '$2a$10$qWx8zV9sHcL4eD3lKjF1pN8qZ0aB4CD7EfGhIjKlMn',
         '0933444555',

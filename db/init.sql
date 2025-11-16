@@ -19,7 +19,9 @@ CREATE TABLE
         rating_as_runner DECIMAL(2, 1) DEFAULT NULL,
         review_count_requester INT DEFAULT 0,
         review_count_runner INT DEFAULT 0,
-        is_admin BOOLEAN DEFAULT FALSE
+        is_admin BOOLEAN DEFAULT FALSE,
+        is_banned BOOLEAN DEFAULT FALSE,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP
     ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci;
 
 -- default users
@@ -31,6 +33,7 @@ VALUES
         'mei@example.com',
         '$2a$10$8uVwqZ8sHcL4eD3lXjG1qO9wT0uABF4MJabc123xyz',
         '0911222333',
+        FALSE,
         FALSE
     ),
     (
@@ -38,6 +41,7 @@ VALUES
         'qiang@example.com',
         '$2a$10$ycZ2C9e8HoQvF.7YJKsZ2C3dNqC.2LxG8f9Qwe56tU',
         '0922333444',
+        FALSE,
         FALSE
     ),
     (
@@ -45,7 +49,8 @@ VALUES
         'admin@example.com',
         '$2a$10$qWx8zV9sHcL4eD3lKjF1pN8qZ0aB4CD7EfGhIjKlMn',
         '0933444555',
-        TRUE
+        TRUE,
+        FALSE
     );
 
 -- -----------------------------

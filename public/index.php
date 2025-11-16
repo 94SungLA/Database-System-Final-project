@@ -128,15 +128,15 @@ requireLogin();
     <!-- Main Content -->
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
 
-        <?php if (!isAdmin()): ?>
+        <?php if (isAdmin() != true): ?>
 
-            <?php if ($activeTab === 'taskboard'): ?>
-                <div class="p-6 bg-white shadow rounded-xl">任務看板（TaskBoard）</div>
-            <?php endif; ?>
-
-            <?php if ($activeTab === 'mytasks'): ?>
-                <div class="p-6 bg-white shadow rounded-xl">我的任務（MyTasks）</div>
-            <?php endif; ?>
+            <?php
+            if ($activeTab === 'taskboard') {
+                include "components/viewTask.php";
+            } elseif ($activeTab === 'mytasks' || $activeTab === 'published' || $activeTab === 'accepted') {
+                include "components/myTask.php";
+            }
+            ?>
 
         <?php endif; ?>
 

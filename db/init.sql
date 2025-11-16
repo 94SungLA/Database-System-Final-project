@@ -1,7 +1,7 @@
 -- Database create
 DROP DATABASE IF EXISTS seavice;
 
-CREATE DATABASE seavice DEFAULT CHARSET utf8mb4;
+CREATE DATABASE seavice DEFAULT CHARSET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 USE seavice;
 
@@ -67,13 +67,14 @@ CREATE TABLE
         ) DEFAULT 'open',
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
         deadline DATETIME,
+        location_tags VARCHAR(255) DEFAULT NULL, -- 新增欄位以儲存地點標籤
+        completed_at DATETIME DEFAULT NULL, -- 新增欄位以儲存任務完成時間
         requester_id INT NOT NULL,
         runner_id INT,
         FOREIGN KEY (requester_id) REFERENCES Users (user_id),
         FOREIGN KEY (runner_id) REFERENCES Users (user_id)
     ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci;
 
--- sample tasks
 INSERT INTO
     Tasks (
         title,
@@ -83,7 +84,8 @@ INSERT INTO
         status,
         requester_id,
         runner_id,
-        deadline
+        deadline,
+        location_tags
     )
 VALUES
     (
@@ -94,7 +96,8 @@ VALUES
         'completed',
         1,
         2,
-        '2025-11-09 18:00'
+        '2025-11-09 18:00',
+        '基隆, 校門口, 飲料店'
     ),
     (
         '幫我寄信到郵局',
@@ -104,7 +107,8 @@ VALUES
         'open',
         2,
         NULL,
-        '2025-11-10 15:00'
+        '2025-11-10 15:00',
+        '基隆, 郵局'
     ),
     (
         '幫我拿包裹',
@@ -114,7 +118,8 @@ VALUES
         'confirming',
         1,
         2,
-        '2025-11-09 19:00'
+        '2025-11-09 19:00',
+        '宿舍, 超商'
     );
 
 -- -----------------------------

@@ -115,12 +115,12 @@ $tasks = getTasks();
 <!-- Overview -->
 <?php
     if ($adminActiveTab === 'overview') {
-        include './component/overview.php';
+        include './components/overview.php';
     }
     elseif ($adminActiveTab === 'users') {
-        include './component/users.php';
+        include './components/users.php';
     }
     elseif ($adminActiveTab === 'tasks') {
-        include './component/tasks.php';
+        include './components/tasks.php';
     }
 ?>

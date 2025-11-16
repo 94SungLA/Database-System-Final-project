@@ -5,12 +5,11 @@ $tasks = adminGetAllTasks();
 var_dump($tasks);
 
 $statusColors = [
-    'pending' => 'bg-yellow-500',
+    'open' => 'bg-yellow-500',
     'confirming' => 'bg-violet-500',
     'in_progress' => 'bg-blue-500',
     'completed' => 'bg-green-500',
     'cancelled' => 'bg-gray-500',
-    'disputed' => 'bg-red-500'
 ];
 
 function getStatusLabel($status) {

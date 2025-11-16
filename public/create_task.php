@@ -118,7 +118,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         </svg>
                         標籤（單選）
                     </label>
-                    <div class="mt-2 grid grid-cols-3 gap-4">
+                    <div class="mt-2 grid grid-cols-2 gap-4">
                         <label class="inline-flex items-center p-3 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer transition duration-200">
                             <input type="radio" name="tags" value="跑腿" class="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50" required>
                             <span class="ml-2 font-medium">跑腿</span>
@@ -130,6 +130,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <label class="inline-flex items-center p-3 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer transition duration-200">
                             <input type="radio" name="tags" value="送件" class="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50" required>
                             <span class="ml-2 font-medium">送件</span>
+                        </label>
+                        <label class="inline-flex items-center p-3 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer transition duration-200">
+                            <input type="radio" name="tags" value="其他" class="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50" required>
+                            <span class="ml-2 font-medium">其他</span>
                         </label>
                     </div>
                 </div>

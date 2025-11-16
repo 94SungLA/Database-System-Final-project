@@ -1,69 +1,75 @@
 <?php
-    require_once "../backend/admin.php";
-    $users = adminGetAllUsers();
-    echo '<pre>';
-    var_dump($users);
-    echo '</pre>';
+require_once "../backend/admin";
+// 假設 $tasks 來自資料庫查詢，例如：
+$tasks = adminGetAllTasks();
+var_dump($tasks);
+
+$statusColors = [
+    'pending' => 'bg-yellow-500',
+    'in_progress' => 'bg-blue-500',
+    'completed' => 'bg-green-500',
+    'cancelled' => 'bg-gray-500',
+    'disputed' => 'bg-red-500'
+];
+
+function getStatusLabel($status) {
+    return match($status) {
+        'pending' => '待接任務',
+        'in_progress' => '進行中',
+        'completed' => '已完成',
+        'cancelled' => '已取消',
+        'disputed' => '爭議中',
+        default => '未知',
+    };
+}
 ?>
 
-<!-- Users Tab -->
 <div class="bg-white rounded-lg border border-gray-200 overflow-hidden">
-    <div class="overflow-x-auto whitespace-nowrap ">
+    <div class="overflow-x-auto">
         <table class="w-full">
             <thead class="bg-gray-50 border-b border-gray-200">
                 <tr>
-                    <th class="px-6 py-3 text-left text-gray-900">用戶名稱</th>
-                    <th class="px-6 py-3 text-left text-gray-900">
-                        <div class="inline-block bg-green-300 px-2 py-1 rounded-lg">
-                            工具人
-                        </div>
-                        評分
-                    </th>
-                    <th class="px-6 py-3 text-left text-gray-900">
-                        <div class="inline-block bg-blue-300 px-2 py-1 rounded-lg">
-                            委託人
-                        </div>
-                        評分
-                    </th>
-                    <th class="px-6 py-3 text-left text-gray-900">完成任務</th>
-                    <th class="px-6 py-3 text-left text-gray-900">發布任務</th>
+                    <th class="px-6 py-3 text-left text-gray-900">任務標題</th>
+                    <th class="px-6 py-3 text-left text-gray-900">類別</th>
+                    <th class="px-6 py-3 text-left text-gray-900">委託人</th>
+                    <th class="px-6 py-3 text-left text-gray-900">工具人</th>
                     <th class="px-6 py-3 text-left text-gray-900">狀態</th>
-                    <th class="px-6 py-3 text-left text-gray-900">註冊日期</th>
+                    <th class="px-6 py-3 text-left text-gray-900">酬勞</th>
+                    <th class="px-6 py-3 text-left text-gray-900">檢舉數</th>
                     <th class="px-6 py-3 text-left text-gray-900">操作</th>
                 </tr>
             </thead>
             <tbody class="divide-y divide-gray-200">
-                <?php foreach ($users as $user): ?>
-                    <tr class="hover:bg-gray-50">
-                        <td class="px-6 py-4 text-gray-900"><?= $user['name'] ?></td>
-                        <td class="px-6 py-4 text-left text-gray-700">
-                            <div class="px-6 py-4 flex items-center gap-1">
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4 text-yellow-500">
-                                    <path fill-rule="evenodd" d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.006 5.404.434c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.434 2.082-5.005Z" clip-rule="evenodd" />
-                                </svg>
-                                <?= $user['rating_as_runner'] ?>
-                            </div>
-                        </td>
-                        <td class="px-6 py-4 text-left text-gray-700">
-                            <div class="px-6 py-4 flex items-center gap-1">
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4 text-yellow-500">
-                                    <path fill-rule="evenodd" d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.006 5.404.434c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.434 2.082-5.005Z" clip-rule="evenodd" />
-                                </svg>
-                                <?= $user['rating_as_requester'] ?>
-                            </div>
-                        </td>
-                        <td class="px-6 py-4 text-gray-700"><?= $user['review_count_runner'] ?></td>
-                        <td class="px-6 py-4 text-gray-700"><?= $user['review_count_requester'] ?></td>
-                        <td class="px-6 py-4"><?= $user['status'] ?></td>
-                        <td class="px-6 py-4 text-gray-700"><?= $user['joinDate'] ?></td>
-                        <td class="px-6 py-4">
-                            <div class="flex gap-2">
-                                <button class="text-blue-600 hover:text-blue-700">查看</button>
-                                <button class="text-red-600 hover:text-red-700">停權</button>
-                                <button class="text-green-600 hover:text-red-700">解除</button>
-                            </div>
-                        </td>
-                    </tr>
+                <?php foreach($tasks as $task): ?>
+                <tr class="hover:bg-gray-50">
+                    <td class="px-6 py-4 text-gray-900"><?= htmlspecialchars($task['title']) ?></td>
+                    <td class="px-6 py-4 text-gray-700"><?= htmlspecialchars($task['category']) ?></td>
+                    <td class="px-6 py-4 text-gray-700"><?= htmlspecialchars($task['requester']) ?></td>
+                    <td class="px-6 py-4 text-gray-700">
+                        <span class="<?= $task['runner'] ? '' : 'italic text-gray-400' ?>">
+                            <?= $task['runner'] ?: '-' ?>
+                        </span>
+                    </td>
+                    <td class="px-6 py-4">
+                        <span class="px-3 py-1 rounded-full text-white <?= $statusColors[$task['status']] ?? 'bg-gray-300' ?>">
+                            <?= getStatusLabel($task['status']) ?>
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 text-gray-700">NT$ <?= number_format($task['reward']) ?></td>
+                    <td class="px-6 py-4">
+                        <span class="px-2 py-0.5 rounded-full text-sm <?= $task['reportCount'] > 0 ? 'bg-red-100 text-red-600' : 'bg-gray-100 text-gray-700' ?>">
+                            <?= $task['reportCount'] ?>
+                        </span>
+                    </td>
+                    <td class="px-6 py-4">
+                        <div class="flex gap-2">
+                            <a href="view_task.php?id=<?= $task['id'] ?>" class="text-blue-600 hover:text-blue-700">查看</a>
+                            <?php if($task['status'] === 'disputed'): ?>
+                                <a href="handle_task.php?id=<?= $task['id'] ?>" class="text-red-600 hover:text-red-700">處理</a>
+                            <?php endif; ?>
+                        </div>
+                    </td>
+                </tr>
                 <?php endforeach; ?>
             </tbody>
         </table>

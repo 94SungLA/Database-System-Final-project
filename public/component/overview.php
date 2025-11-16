@@ -1,3 +1,8 @@
+<?php
+    require_once "../backend/admin.php";
+    $tagStats = adminGetTasksCount();
+?>
+
 <div id="tab-content-overview">
 
     <!-- 圖表 -->
@@ -13,14 +18,11 @@
         <h3 class="text-gray-900 mb-4">熱門任務類別</h3>
 
         <div class="space-y-3">
-            <?php
-            $categories = ["代購","取件","送件","其他"];
-            foreach ($categories as $category):
-                $count = count(array_filter($tasks, fn($t) => $t['category'] === $category));
-                $percentage = count($tasks) > 0 ? $count / count($tasks) * 100 : 0;
+            <?php foreach ($tagStats as $stat): 
+                $percentage = $stat['Total'] > 0 ? $stat['num'] / $stat['Total'] * 100 : 0;
             ?>
             <div class="flex items-center justify-between">
-                <span class="text-gray-700"><?= $category ?></span>
+                <span class="text-gray-700"><?= htmlspecialchars($stat['tag']) ?></span>
                 <div class="flex items-center gap-3">
                     <div class="w-32 h-2 bg-gray-200 rounded-full overflow-hidden">
                         <div class="h-full bg-blue-600 rounded-full" style="width: <?= $percentage ?>%"></div>

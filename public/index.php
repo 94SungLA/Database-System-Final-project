@@ -140,8 +140,11 @@ requireLogin();
 
         <?php endif; ?>
 
-        <?php if (isAdmin())
-            include "components/adminManage.php"; ?>
+        <?php if (isAdmin()): ?>
+            <?php if ($activeTab === 'admin')
+                        include "admin_panel.php"; ?>
+
+        <?php endif; ?>
 
     </main>
 

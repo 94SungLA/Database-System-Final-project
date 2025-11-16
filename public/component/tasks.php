@@ -1,51 +1,67 @@
-<div class="overflow-x-auto">
-    <table class="min-w-full divide-y divide-gray-200">
-        <thead class="bg-gray-50">
-            <tr>
-                <th class="px-6 py-3 text-left text-gray-900">任務標題</th>
-                <th class="px-6 py-3 text-left text-gray-900">分類</th>
-                <th class="px-6 py-3 text-left text-gray-900">標籤</th>
-                <th class="px-6 py-3 text-left text-gray-900">狀態</th>
-                <th class="px-6 py-3 text-left text-gray-900">委託人</th>
-                <th class="px-6 py-3 text-left text-gray-900">工具人</th>
-                <th class="px-6 py-3 text-left text-gray-900">建立日期</th>
-                <th class="px-6 py-3 text-left text-gray-900">操作</th>
-            </tr>
-        </thead>
-        <tbody class="bg-white divide-y divide-gray-200">
-            <?php foreach ($tasks as $task): ?>
+<?php
+require_once "../backend/admin.php";
+// 假設 $tasks 來自資料庫查詢，例如：
+$tasks = adminGetAllTasks();
+var_dump($tasks);
+
+$statusColors = [
+    'pending' => 'bg-yellow-500',
+    'in_progress' => 'bg-blue-500',
+    'completed' => 'bg-green-500',
+    'cancelled' => 'bg-gray-500',
+    'disputed' => 'bg-red-500'
+];
+
+function getStatusLabel($status) {
+    return match($status) {
+        'pending' => '待接任務',
+        'in_progress' => '進行中',
+        'completed' => '已完成',
+        'cancelled' => '已取消',
+        default => '未知',
+    };
+}
+?>
+
+<div class="bg-white rounded-lg border border-gray-200 overflow-hidden">
+    <div class="overflow-x-auto whitespace-nowrap">
+        <table class="w-full">
+            <thead class="bg-gray-50 border-b border-gray-200">
+                <tr>
+                    <th class="px-6 py-3 text-left text-gray-900">任務標題</th>
+                    <th class="px-6 py-3 text-left text-gray-900">類別</th>
+                    <th class="px-6 py-3 text-left text-gray-900">委託人</th>
+                    <th class="px-6 py-3 text-left text-gray-900">工具人</th>
+                    <th class="px-6 py-3 text-left text-gray-900">狀態</th>
+                    <th class="px-6 py-3 text-left text-gray-900">酬勞</th>
+                    <th class="px-6 py-3 text-left text-gray-900">操作</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-200">
+                <?php foreach($tasks as $task): ?>
                 <tr class="hover:bg-gray-50">
                     <td class="px-6 py-4 text-gray-900"><?= htmlspecialchars($task['title']) ?></td>
-                    <td class="px-6 py-4">
-                        <span class="px-2 py-1 rounded-lg bg-blue-100 text-blue-800 text-sm"><?= htmlspecialchars($task['category']) ?></span>
+                    <td class="px-6 py-4 text-gray-700"><?= htmlspecialchars($task['tags']) ?></td>
+                    <td class="px-6 py-4 text-gray-700"><?= htmlspecialchars($task['requester_name']) ?></td>
+                    <td class="px-6 py-4 text-gray-700">
+                        <span class="<?= $task['runner'] ? '' : 'italic text-gray-400' ?>">
+                            <?= $task['runner'] ?: '-' ?>
+                        </span>
                     </td>
                     <td class="px-6 py-4">
-                        <?php 
-                        $tags = explode(',', $task['tags'] ?? '');
-                        foreach ($tags as $tag): ?>
-                            <span class="px-2 py-1 rounded-lg bg-gray-200 text-gray-700 text-xs mr-1"><?= htmlspecialchars($tag) ?></span>
-                        <?php endforeach; ?>
+                        <span class="px-3 py-1 rounded-full text-white <?= $statusColors[$task['status']] ?? 'bg-gray-300' ?>">
+                            <?= getStatusLabel($task['status']) ?>
+                        </span>
                     </td>
+                    <td class="px-6 py-4 text-gray-700">NT$ <?= number_format($task['reward']) ?></td>
                     <td class="px-6 py-4">
-                        <?php
-                        $statusColors = [
-                            'in_progress' => 'bg-yellow-100 text-yellow-800',
-                            'completed' => 'bg-green-100 text-green-800',
-                            'disputed' => 'bg-red-100 text-red-800',
-                        ];
-                        $colorClass = $statusColors[$task['status']] ?? 'bg-gray-100 text-gray-800';
-                        ?>
-                        <span class="px-2 py-1 rounded-lg <?= $colorClass ?> text-sm"><?= htmlspecialchars($task['status']) ?></span>
-                    </td>
-                    <td class="px-6 py-4 text-gray-700"><?= htmlspecialchars($task['requester']) ?></td>
-                    <td class="px-6 py-4 text-gray-700"><?= htmlspecialchars($task['runner']) ?></td>
-                    <td class="px-6 py-4 text-gray-700"><?= htmlspecialchars($task['created_at']) ?></td>
-                    <td class="px-6 py-4 flex gap-2">
-                        <button class="text-blue-600 hover:text-blue-700">查看</button>
-                        <button class="text-red-600 hover:text-red-700">刪除</button>
+                        <div class="flex gap-2">
+                            <a href="view_task.php?id=<?= $task['id'] ?>" class="text-blue-600 hover:text-blue-700">查看</a>
+                        </div>
                     </td>
                 </tr>
-            <?php endforeach; ?>
-        </tbody>
-    </table>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
+    </div>
 </div>

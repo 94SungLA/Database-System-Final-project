@@ -122,7 +122,7 @@ $filteredTasks = ($statusFilter === 'all')
         <?php else: ?>
             <?php foreach ($filteredTasks as $task):
                 $statusInfo = getStatusInfo($task['status']);
-                ?>
+            ?>
                 <div class="bg-white rounded-lg border border-gray-200 p-6">
                     <div class="flex justify-between items-start mb-4">
                         <div class="flex-1">
@@ -174,7 +174,7 @@ $filteredTasks = ($statusFilter === 'all')
 
                     <!-- Action Buttons -->
                     <div class="flex gap-3 flex-wrap">
-                        <a href="/public/viewTask.php?id=<?= $task['task_id'] ?>"
+                        <a href="index.php?tab=taskboard&task_id=<?= $task['task_id'] ?>"
                             class="flex items-center gap-2 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
                             <?= getIcon('eye') ?>
                             查看詳情
@@ -211,7 +211,8 @@ $filteredTasks = ($statusFilter === 'all')
                                         <?= getIcon('star') ?> 評價執行者
                                     </a>
                                 <?php endif; ?>
-                            <?php else: // Accepted Tab ?>
+                            <?php else: // Accepted Tab 
+                            ?>
                                 <?php if ($task['status'] === 'in_progress'): ?>
                                     <button type="submit" name="action" value="complete_by_runner"
                                         class="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">

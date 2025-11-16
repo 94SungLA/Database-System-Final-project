@@ -26,7 +26,15 @@ CREATE TABLE
 
 -- default users
 INSERT INTO
-    Users (name, email, password_hash, phone, is_admin)
+    Users (
+        name,
+        email,
+        password_hash,
+        phone,
+        is_admin,
+        is_banned,
+        created_at
+    )
 VALUES
     (
         '小美',
@@ -34,7 +42,8 @@ VALUES
         '$2a$10$8uVwqZ8sHcL4eD3lXjG1qO9wT0uABF4MJabc123xyz',
         '0911222333',
         FALSE,
-        FALSE
+        FALSE,
+        CURRENT_TIMESTAMP
     ),
     (
         '阿強',
@@ -42,7 +51,8 @@ VALUES
         '$2a$10$ycZ2C9e8HoQvF.7YJKsZ2C3dNqC.2LxG8f9Qwe56tU',
         '0922333444',
         FALSE,
-        FALSE
+        FALSE,
+        CURRENT_TIMESTAMP
     ),
     (
         '老王 (管理員)',
@@ -50,7 +60,8 @@ VALUES
         '$2a$10$qWx8zV9sHcL4eD3lKjF1pN8qZ0aB4CD7EfGhIjKlMn',
         '0933444555',
         TRUE,
-        FALSE
+        FALSE,
+        CURRENT_TIMESTAMP
     );
 
 -- -----------------------------

@@ -62,6 +62,22 @@ VALUES
         TRUE,
         FALSE,
         CURRENT_TIMESTAMP
+    ), (
+        'CS',
+        'CS@example.com',
+        '$2a$10$qWx8zV9sHcL4eD3lKjF1pN8qZ0aB4CD7EfGhIjKlMn',
+        '09988165782',
+        FALSE,
+        TRUE,
+        CURRENT_TIMESTAMP
+    ), (
+        '阿喜',
+        'si@email.com',
+        '$2a$10$ycZ2C9e8HoQvF.7YJKsZ2C3dNqC.2LxG8f9Qwe56tU',
+        '095544179123',
+        FALSE,
+        FALSE,
+        CURRENT_TIMESTAMP
     );
 
 -- -----------------------------
@@ -120,9 +136,9 @@ VALUES
         '請於下午三點前送達',
         '送件',
         40,
-        'open',
+        'in_progress',
         2,
-        NULL,
+        4,
         '2025-11-10 15:00',
         '基隆, 郵局'
     ),
@@ -140,7 +156,7 @@ VALUES
 
 INSERT INTO Tasks (title, description, tags, reward, status, deadline, location_tags, requester_id)
 VALUES
-('幫忙去 7-11 取包裹', '在海大附近 7-11 取已付款包裹，A4 大小', '跑腿', 90, 'open', '2025-11-18 20:00', '基隆,七堵,7-11', 2),
+('幫忙去 7-11 取包裹', '在海大附近 7-11 取已付款包裹，A4 大小', '跑腿', 90, 'in_progress', '2025-11-18 20:00', '基隆,七堵,7-11', 2),
 
 ('代購麥當勞宵夜', '大麥克餐 + 冰奶茶，送到宿舍', '代購', 110, 'open', '2025-11-18 23:00', '基隆,海大,北寧宿舍', 3),
 

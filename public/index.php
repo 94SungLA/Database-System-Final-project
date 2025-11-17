@@ -3,7 +3,10 @@ session_start();
 require_once "../backend/auth.php";
 require_once "../backend/user.php";
 requireLogin();
-// 假設這些變數由你的後端提供
+
+// 統一定義 activeTab，避免重複
+$activeTab = $_GET['tab'] ?? (isAdmin() ? 'admin' : 'taskboard');
+$taskId = isset($_GET['task_id']) ? (int)$_GET['task_id'] : null;
 
 ?>
 <!DOCTYPE html>
@@ -82,7 +85,6 @@ requireLogin();
                     <?php
                     // 管理員專屬 tab
                     $adminTab = ["id" => "admin", "label" => "管理面板"];
-                    $activeTab = $_GET['tab'] ?? 'admin';
                     $isActive = ($activeTab === $adminTab['id']);
                     ?>
                     <a href="?tab=<?= $adminTab['id'] ?>" class="flex items-center gap-2 px-6 py-3 border-b-2 transition-colors
@@ -107,7 +109,6 @@ requireLogin();
                         ["id" => "mytasks", "label" => "我的任務", "icon" => '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" /></svg> ']
                     ];
                     foreach ($userTabs as $tab):
-                        $activeTab = $_GET['tab'] ?? 'taskboard';
                         $isMyTasksSection = in_array($activeTab, ['mytasks', 'published', 'accepted']);
                         $isActive = ($tab['id'] === 'mytasks' && $isMyTasksSection) || $activeTab === $tab['id'];
                     ?>
@@ -130,37 +131,38 @@ requireLogin();
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
 
         <?php if (!isAdmin()): ?>
-
-            <?php if ($activeTab === 'taskboard'): ?>
+            <?php if ($taskId): ?>
                 <div class="mb-4">
-                    <a href="create_task.php" class="inline-flex items-center px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 mr-2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-                        </svg>
-                        發布新任務
+                    <a href="index.php?tab=taskboard" class="inline-flex items-center px-3 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300">
+                        ← 返回任務列表
                     </a>
                 </div>
+                <?php include "task_detail.php"; ?>
+            <?php else: ?>
+                <?php if ($activeTab === 'taskboard'): ?>
+                    <div class="mb-4">
+                        <a href="create_task.php" class="inline-flex items-center px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                            </svg>
+                            發布新任務
+                        </a>
+                    </div>
+                <?php endif; ?>
+                <?php
+                if ($activeTab === 'taskboard') {
+                    include "components/viewTask.php";
+                } elseif (in_array($activeTab, ['mytasks', 'published', 'accepted'])) {
+                    include "components/myTask.php";
+                }
+                ?>
             <?php endif; ?>
-
-            <?php
-            $activeTab = $_GET['tab'] ?? 'taskboard';
-            if ($activeTab === 'taskboard') {
-                include "components/viewTask.php";
-            } elseif (in_array($activeTab, ['mytasks', 'published', 'accepted'])) {
-                include "components/myTask.php";
-            }
-            ?>
-
         <?php endif; ?>
 
-        <?php if (isAdmin()): ?>
-            <?php if ($activeTab === 'admin')
-                include "admin_panel.php"; ?>
-
+        <?php if (isAdmin() && $activeTab === 'admin'): ?>
+            <?php include "admin_panel.php"; ?>
         <?php endif; ?>
-
     </main>
-
 </body>
 
 </html>

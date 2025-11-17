@@ -135,3 +135,25 @@ function cancelTask($task_id, $requester_id)
                                   AND status IN ('open', 'confirming');");
     return $stmt->execute([$task_id, $requester_id]);
 }
+
+// 取得單筆任務詳細資訊
+// usage: $task = getTaskDetailsById($_GET['id']);
+function getTaskDetailsById($id)
+{
+    global $pdo;
+    $stmt = $pdo->prepare("
+        SELECT t.*,
+               req.name AS requester_name,
+               req.phone AS requester_phone,
+               req.email AS requester_email,
+               req.rating_as_requester,
+               run.name AS runner_name,
+               run.phone AS runner_phone,
+               run.email AS runner_email
+        FROM Tasks t
+        JOIN Users req ON req.user_id = t.requester_id
+        LEFT JOIN Users run ON run.user_id = t.runner_id
+        WHERE t.task_id = ?");
+    $stmt->execute([$id]);
+    return $stmt->fetch();
+}

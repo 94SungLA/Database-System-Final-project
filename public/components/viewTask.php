@@ -13,15 +13,15 @@ function formatDeadline($deadline)
 }
 ?>
 
-<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
     <?php if (empty($tasks)): ?>
         <div class="col-span-full text-center py-12 bg-white rounded-lg border border-gray-200">
             <p class="text-gray-600">目前沒有可用的任務</p>
         </div>
     <?php else: ?>
         <?php foreach ($tasks as $task): ?>
-            <div class="bg-white rounded-lg border border-gray-200 p-6 hover:shadow-lg transition-shadow">
-                <div class="mb-4">
+            <div class="bg-white rounded-lg border border-gray-200 p-6 hover:shadow-lg transition-shadow min-h-[400px] flex flex-col">
+                <div class="mb-6">
                     <h3 class="text-gray-900 font-bold text-lg mb-2"><?= htmlspecialchars($task["title"]) ?></h3>
                     <div class="flex flex-wrap gap-2">
                         <?php if (!empty($task['tags'])): ?>
@@ -32,9 +32,9 @@ function formatDeadline($deadline)
                     </div>
                 </div>
 
-                <p class="text-gray-600 mb-4 line-clamp-2 h-12"><?= htmlspecialchars($task["description"]) ?></p>
+                <p class="text-gray-600 mb-6 line-clamp-2 h-12"><?= htmlspecialchars($task["description"]) ?></p>
 
-                <div class="space-y-2 mb-4">
+                <div class="space-y-2 mb-6">
                     <div class="flex items-center gap-2 text-gray-700">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
                             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
@@ -74,9 +74,9 @@ function formatDeadline($deadline)
                     </div>
                 </div>
 
-                <div class="flex gap-2">
-                    <a href="/public/viewTask.php?id=<?= $task['task_id'] ?>"
-                        class="flex-1 flex items-center justify-center gap-2 px-4 py-2 border border-blue-600 text-blue-600 rounded-lg hover:bg-blue-50 transition-colors">
+                <div class="flex gap-2 mt-auto">
+                    <a href="index.php?tab=taskboard&task_id=<?= $task['task_id'] ?>"
+                        class="flex items-center justify-center gap-2 px-4 py-2 border border-blue-600 text-blue-600 rounded-lg hover:bg-blue-50 transition-colors">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
                             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
@@ -84,16 +84,6 @@ function formatDeadline($deadline)
                         </svg>
                         查看詳情
                     </a>
-                    <?php if (isset($_SESSION['user'])): ?>
-                        <form action="/backend/task_handler.php" method="POST" class="flex-1">
-                            <input type="hidden" name="task_id" value="<?= $task['task_id'] ?>">
-                            <input type="hidden" name="action" value="apply">
-                            <button type="submit"
-                                class="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
-                                申請接單
-                            </button>
-                        </form>
-                    <?php endif; ?>
                 </div>
             </div>
         <?php endforeach; ?>

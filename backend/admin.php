@@ -35,8 +35,8 @@ function adminGetAllTasks()
     $stmt = $pdo->query("SELECT t.*, u.name AS requester_name, 
                                             r.name AS runner_name
                          FROM Tasks t
-                         JOIN Users u ON u.user_id = t.requester_id
-                         JOIN Users r ON r.user_id = t.runner_id
+                         LEFT JOIN Users u ON u.user_id = t.requester_id
+                         LEFT JOIN Users r ON r.user_id = t.runner_id
                          ORDER BY created_at DESC");
     return $stmt->fetchAll();
 }

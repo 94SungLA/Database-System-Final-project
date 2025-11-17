@@ -174,7 +174,7 @@ $filteredTasks = ($statusFilter === 'all')
                         </div>
                     <?php endif; ?>
 
-                    <?php if ($task['status'] === 'completed' && !empty($task['rating'])): ?>
+                    <?php if ($task['status'] === 'completed' && isset($task['rating']) && !empty($task['rating'])): ?>
                         <div class="mb-4 p-3 bg-yellow-50 rounded-lg">
                             <div class="flex items-center gap-2 mb-1">
                                 <?= getIcon('star') ?>
@@ -230,7 +230,7 @@ $filteredTasks = ($statusFilter === 'all')
                                             data-task-id="<?= $task['task_id'] ?>"
                                             data-reviewee-id="<?= $activeTab === 'published' ? $task['runner_id'] : $task['requester_id'] ?>"
                                             data-role="<?= $activeTab === 'published' ? 'runner' : 'requester' ?>"
-                                            data-review-id="<?= $task['review_id'] ?>">
+                                            data-review-id="<?= isset($task['review_id']) ? $task['review_id'] : '' ?>">
                                             <?= getIcon('star') ?> 編輯評價
                                         </button>
                                     <?php endif; ?>
@@ -250,7 +250,7 @@ $filteredTasks = ($statusFilter === 'all')
                                             data-task-id="<?= $task['task_id'] ?>"
                                             data-reviewee-id="<?= $activeTab === 'published' ? $task['runner_id'] : $task['requester_id'] ?>"
                                             data-role="<?= $activeTab === 'published' ? 'runner' : 'requester' ?>"
-                                            data-review-id="<?= $task['review_id'] ?>">
+                                            data-review-id="<?= isset($task['review_id']) ? $task['review_id'] : '' ?>">
                                             <?= getIcon('star') ?> 編輯評價
                                         </button>
                                     <?php endif; ?>

@@ -96,7 +96,7 @@ try {
     if ($source === 'myTask') {
         header("Location: ../public/index.php?tab=mytasks");
     } elseif ($source === 'task_detail') {
-        header("Location: ../public/task_detail.php?task_id=$task_id");
+        header("Location: ../public/index.php?tab=mytasks");
     } else {
         header("Location: ../public/index.php");
     }

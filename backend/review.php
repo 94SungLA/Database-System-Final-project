@@ -65,7 +65,35 @@ function recalculateUserRating($user_id)
     $stmt->execute([$user_id]);
 }
 
-// Handle POST request for creating or updating review
+// 新增函數：獲取使用者的評分和評價次數
+// usage: getUserRating($user_id, $role) where $role is 'requester' or 'runner'
+function getUserRating($user_id, $role)
+{
+    global $pdo;
+    $stmt = $pdo->prepare("SELECT rating_as_$role, review_count_$role FROM Users WHERE user_id = ?");
+    $stmt->execute([$user_id]);
+    return $stmt->fetch(PDO::FETCH_ASSOC);
+}
+
+// 新增函數：獲取使用者的評論列表
+// usage: getUserReviews($user_id, $role, $limit) where $role is 'requester' or 'runner'
+function getUserReviews($user_id, $role, $limit = 5)
+{
+    global $pdo;
+    $stmt = $pdo->prepare("SELECT r.rating, r.comment, r.created_at, u.name AS reviewer_name
+                           FROM Reviews r
+                           JOIN Users u ON r.reviewer_id = u.user_id
+                           WHERE r.reviewee_id = ? AND r.role = ?
+                           ORDER BY r.created_at DESC
+                           LIMIT ?");
+    $stmt->bindValue(1, $user_id, PDO::PARAM_INT);
+    $stmt->bindValue(2, $role, PDO::PARAM_STR);
+    $stmt->bindValue(3, $limit, PDO::PARAM_INT);
+    $stmt->execute();
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
+// Handle POST request for creating review
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     header('Content-Type: application/json');
     $task_id = $_POST['task_id'] ?? null;

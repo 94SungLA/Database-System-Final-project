@@ -19,7 +19,7 @@
 
         <div class="space-y-3">
             <?php foreach ($tagStats as $stat):
-                $percentage = $stat['Total'] > 0 ? $stat['num'] / $stat['Total'] * 100 : 0;
+                $percentage = $stat['Total'] > 0 ? ROUND(($stat['num'] / $stat['Total']), 2) * 100 : 0;
             ?>
             <div class="flex items-center justify-between">
                 <span class="text-gray-700"><?= htmlspecialchars($stat['tag']) ?></span>

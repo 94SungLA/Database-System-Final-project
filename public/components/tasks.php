@@ -118,6 +118,7 @@
         </form>
       </div>
 
+      <?php var_dump($selectedTask)?>
       <div class="space-y-6">
         <!-- Task Info -->
         <div class="pb-2 mb-2 border-b border-gray-200">
@@ -176,6 +177,49 @@
             <p class="text-gray-900"><?= htmlspecialchars($selectedTask['location_tags']) ?></p>
           </div>
         </div>
+
+        <!-- Comment -->
+        <?php if (!empty($selectedTask['rq_review']) || !empty($selectedTask['rn_review'])): ?>
+          <div class="flex flex-col pt-6 border-t border-gray-200">
+            <?php if (!empty($selectedTask['rq_review'])): ?>
+              <div class="mb-4 p-3 bg-yellow-50 rounded-lg w-full">
+                  <div class="flex items-center mb-1">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+                      <span class="text-gray-900 font-semibold"><span class="bg-blue-300 rounded-lg pl-1 pr-1">委託人: <?= htmlspecialchars($selectedTask['requester_name']) ?></span>給出的評價：<?= htmlspecialchars($selectedTask['rqrt']) ?> / 5</span>
+                  </div>
+                  <p class="text-gray-700"><?= htmlspecialchars($selectedTask['rq_review']) ?></p>
+                  <form method="POST" class="flex flex-1 justify-end">
+                    <button
+                        name=""
+                        class="pl-2 pr-2 rounded-lg bg-red-200 text-gray-900 hover:bg-red-300 text-center text-base"
+                        style="border:none; cursor:pointer;"
+                    >
+                        刪除
+                    </button>
+                  </form>
+              </div>
+            <?php endif; ?>
+
+            <?php if (!empty($selectedTask['rn_review'])): ?>
+              <div class="mb-4 p-3 bg-yellow-50 rounded-lg w-full">
+                  <div class="flex items-center mb-1">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+                      <span class="text-gray-900 font-semibold"><span class="bg-green-300 rounded-lg pl-1 pr-1">工具人: <?= htmlspecialchars($selectedTask['runner_name']) ?></span>給出的評價：<?= htmlspecialchars($selectedTask['rnrt']) ?> / 5</span>
+                  </div>
+                  <p class="text-gray-700"><?= htmlspecialchars($selectedTask['rn_review']) ?></p>
+                  <form method="POST" class="flex flex-1 justify-end">
+                    <button
+                        name=""
+                        class="pl-2 pr-2 rounded-lg bg-red-200 text-gray-900 hover:bg-red-300 text-center text-base"
+                        style="border:none; cursor:pointer;"
+                    >
+                        刪除
+                    </button>
+                  </form>
+              </div>
+            <?php endif; ?>
+          </div>
+        <?php endif; ?>
 
         <!-- Actions -->
         <div class="flex gap-3 pt-6 border-t border-gray-200">

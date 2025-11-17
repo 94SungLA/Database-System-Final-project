@@ -18,9 +18,11 @@ function getOpenTasks()
 function getTaskById($id)
 {
     global $pdo;
-    $stmt = $pdo->prepare("SELECT t.*, rn.name as runner_name, rq.name as requester_name FROM Tasks as t
+    $stmt = $pdo->prepare("SELECT t.*, rn.name as runner_name, rq.name as requester_name, rqrw.rating as rqrt, rqrw.comment as rq_review, rnrw.rating as rnrt, rnrw.comment as rn_review FROM Tasks as t
                                   LEFT JOIN Users as rn on t.runner_id = rn.user_id
                                   LEFT JOIN Users as rq on t.requester_id = rq.user_id
+                                  LEFT JOIN reviews as rqrw on rqrw.role='requester' and rqrw.task_id=t.task_id
+                                  LEFT JOIN reviews as rnrw on rnrw.role='runner' and rnrw.task_id=t.task_id
                                   WHERE t.task_id=?");
     $stmt->execute([$id]);
     return $stmt->fetch();

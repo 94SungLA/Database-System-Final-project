@@ -55,7 +55,8 @@ VALUES (
         TRUE,
         FALSE,
         CURRENT_TIMESTAMP
-    ), (
+    ),
+    (
         'CS',
         'CS@example.com',
         '$2a$10$qWx8zV9sHcL4eD3lKjF1pN8qZ0aB4CD7EfGhIjKlMn',
@@ -63,7 +64,8 @@ VALUES (
         FALSE,
         TRUE,
         CURRENT_TIMESTAMP
-    ), (
+    ),
+    (
         '阿喜',
         'si@email.com',
         '$2a$10$ycZ2C9e8HoQvF.7YJKsZ2C3dNqC.2LxG8f9Qwe56tU',
@@ -147,29 +149,116 @@ VALUES (
         '宿舍, 超商',
         NULL
     );
-
-INSERT INTO Tasks (title, description, tags, reward, status, deadline, location_tags, requester_id)
-VALUES
-('幫忙去 7-11 取包裹', '在海大附近 7-11 取已付款包裹，A4 大小', '跑腿', 90, 'in_progress', '2025-11-18 20:00', '基隆,七堵,7-11', 2),
-
-('代購麥當勞宵夜', '大麥克餐 + 冰奶茶，送到宿舍', '代購', 110, 'open', '2025-11-18 23:00', '基隆,海大,北寧宿舍', 3),
-
-('文件送到行政大樓體育室', '把系羽申請表送到行政大樓 5 樓', '送件', 60, 'open', '2025-11-17 12:00', '海大,行政大樓', 1),
-
-('搬宿舍小幫手', '從北寧搬到祥豐四箱生活用品，附飲料', '其他', 200, 'open', '2025-11-19 17:00', '海大,北寧宿舍,祥豐宿舍', 4),
-
-('幫修腳踏車鏈條', '鏈條怪怪的會爆音，可補材料費', '其他', 350, 'open', '2025-11-25 19:00', '基隆,腳踏車店', 2),
-
-('代寄包裹到全家', '面單已列印，只需代寄即可', '跑腿', 80, 'open', '2025-11-20 16:00', '基隆,仁二路,全家', 3),
-
-('影印講義 50 份雙面黑白', '送到資工系館 307', '跑腿', 150, 'open', '2025-11-21 14:00', '海大,資工大樓', 5),
-
-('代購星巴克', '兩杯 Venti 拿鐵無糖去冰送到和平校區', '代購', 180, 'open', '2025-11-18 15:30', '信義區,星巴克,和平校區', 1),
-
-('幫遛狗 30 分鐘', '柴柴乖且不會亂叫，附飲料', '其他', 120, 'open', '2025-11-18 18:30', '暖暖,公園', 4),
-
-('送急件契約書到南港', '急件！從中山送到南港', '送件', 300, 'open', '2025-11-18 14:00', '中山區,南港', 4);
-
+INSERT INTO Tasks (
+        title,
+        description,
+        tags,
+        reward,
+        status,
+        deadline,
+        location_tags,
+        requester_id
+    )
+VALUES (
+        '幫忙去 7-11 取包裹',
+        '在海大附近 7-11 取已付款包裹，A4 大小',
+        '跑腿',
+        90,
+        'in_progress',
+        '2025-11-18 20:00',
+        '基隆,七堵,7-11',
+        2
+    ),
+    (
+        '代購麥當勞宵夜',
+        '大麥克餐 + 冰奶茶，送到宿舍',
+        '代購',
+        110,
+        'open',
+        '2025-11-18 23:00',
+        '基隆,海大,北寧宿舍',
+        3
+    ),
+    (
+        '文件送到行政大樓體育室',
+        '把系羽申請表送到行政大樓 5 樓',
+        '送件',
+        60,
+        'open',
+        '2025-11-17 12:00',
+        '海大,行政大樓',
+        1
+    ),
+    (
+        '搬宿舍小幫手',
+        '從北寧搬到祥豐四箱生活用品，附飲料',
+        '其他',
+        200,
+        'open',
+        '2025-11-19 17:00',
+        '海大,北寧宿舍,祥豐宿舍',
+        4
+    ),
+    (
+        '幫修腳踏車鏈條',
+        '鏈條怪怪的會爆音，可補材料費',
+        '其他',
+        350,
+        'open',
+        '2025-11-25 19:00',
+        '基隆,腳踏車店',
+        2
+    ),
+    (
+        '代寄包裹到全家',
+        '面單已列印，只需代寄即可',
+        '跑腿',
+        80,
+        'open',
+        '2025-11-20 16:00',
+        '基隆,仁二路,全家',
+        3
+    ),
+    (
+        '影印講義 50 份雙面黑白',
+        '送到資工系館 307',
+        '跑腿',
+        150,
+        'open',
+        '2025-11-21 14:00',
+        '海大,資工大樓',
+        5
+    ),
+    (
+        '代購星巴克',
+        '兩杯 Venti 拿鐵無糖去冰送到和平校區',
+        '代購',
+        180,
+        'open',
+        '2025-11-18 15:30',
+        '信義區,星巴克,和平校區',
+        1
+    ),
+    (
+        '幫遛狗 30 分鐘',
+        '柴柴乖且不會亂叫，附飲料',
+        '其他',
+        120,
+        'open',
+        '2025-11-18 18:30',
+        '暖暖,公園',
+        4
+    ),
+    (
+        '送急件契約書到南港',
+        '急件！從中山送到南港',
+        '送件',
+        300,
+        'open',
+        '2025-11-18 14:00',
+        '中山區,南港',
+        4
+    );
 -- -----------------------------
 --  Reviews Table
 -- -----------------------------
@@ -183,13 +272,11 @@ CREATE TABLE Reviews (
         rating >= 0
         AND rating <= 5
     ),
-    = 5
-),
-comment TEXT,
-created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-FOREIGN KEY (task_id) REFERENCES Tasks (task_id),
-FOREIGN KEY (reviewer_id) REFERENCES Users (user_id),
-FOREIGN KEY (reviewee_id) REFERENCES Users (user_id)
+    comment TEXT,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (task_id) REFERENCES Tasks (task_id),
+    FOREIGN KEY (reviewer_id) REFERENCES Users (user_id),
+    FOREIGN KEY (reviewee_id) REFERENCES Users (user_id)
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci;
 -- sample reviews
 INSERT INTO Reviews (

@@ -180,7 +180,7 @@ $filteredTasks = ($statusFilter === 'all')
                                 <?= getIcon('star') ?>
                                 <span class="text-gray-900 font-semibold">您給出的評價：<?= htmlspecialchars($task['rating']) ?> / 5</span>
                             </div>
-                            <p class="text-gray-700">"<?= htmlspecialchars($task['comment']) ?>"</p>
+                            <p class="text-gray-700"><?= htmlspecialchars($task['comment']) ?></p>
                         </div>
                     <?php endif; ?>
 
@@ -230,7 +230,9 @@ $filteredTasks = ($statusFilter === 'all')
                                             data-task-id="<?= $task['task_id'] ?>"
                                             data-reviewee-id="<?= $activeTab === 'published' ? $task['runner_id'] : $task['requester_id'] ?>"
                                             data-role="<?= $activeTab === 'published' ? 'runner' : 'requester' ?>"
-                                            data-review-id="<?= isset($task['review_id']) ? $task['review_id'] : '' ?>">
+                                            data-review-id="<?= isset($task['review_id']) ? $task['review_id'] : '' ?>"
+                                            data-rating="<?= htmlspecialchars($task['rating'] ?? '') ?>"
+                                            data-comment="<?= htmlspecialchars($task['comment'] ?? '') ?>">
                                             <?= getIcon('star') ?> 編輯評價
                                         </button>
                                     <?php endif; ?>
@@ -250,7 +252,9 @@ $filteredTasks = ($statusFilter === 'all')
                                             data-task-id="<?= $task['task_id'] ?>"
                                             data-reviewee-id="<?= $activeTab === 'published' ? $task['runner_id'] : $task['requester_id'] ?>"
                                             data-role="<?= $activeTab === 'published' ? 'runner' : 'requester' ?>"
-                                            data-review-id="<?= isset($task['review_id']) ? $task['review_id'] : '' ?>">
+                                            data-review-id="<?= isset($task['review_id']) ? $task['review_id'] : '' ?>"
+                                            data-rating="<?= htmlspecialchars($task['rating'] ?? '') ?>"
+                                            data-comment="<?= htmlspecialchars($task['comment'] ?? '') ?>">
                                             <?= getIcon('star') ?> 編輯評價
                                         </button>
                                     <?php endif; ?>

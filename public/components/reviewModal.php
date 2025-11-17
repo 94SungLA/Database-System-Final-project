@@ -2,16 +2,54 @@
 <style>
     .star {
         color: gold;
-        transition: color 0.2s ease, transform 0.2s ease;
+        transition: color 0.3s ease, transform 0.3s ease, text-shadow 0.3s ease;
     }
 
     .star:hover {
         color: #ffd700;
-        transform: scale(1.1);
+        transform: scale(1.2);
+        text-shadow: 0 0 10px #ffd700;
     }
 
     .star.selected {
         color: #ffed4e;
+        text-shadow: 0 0 15px #ffed4e;
+    }
+
+    #reviewModal {
+        backdrop-filter: blur(5px);
+    }
+
+    #modalContent {
+        background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3), 0 0 20px rgba(0, 123, 255, 0.1);
+        border-radius: 20px;
+    }
+
+    #starRating .star {
+        font-size: 2.5rem;
+    }
+
+    textarea {
+        border-radius: 10px;
+        border: 2px solid #e2e8f0;
+        transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    textarea:focus {
+        border-color: #3b82f6;
+        box-shadow: 0 0 10px rgba(59, 130, 246, 0.3);
+    }
+
+    button {
+        border-radius: 10px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+    button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
     }
 </style>
 <div id="reviewModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden flex items-center justify-center z-50">

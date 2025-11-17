@@ -38,39 +38,40 @@ function createTask($title, $desc, $tags, $reward, $deadline, $location_tags, $r
 
 // 透過請求者ID取得其所有任務
 // usage: $tasks = getTasksByRequesterID($_SESSION['user']['user_id']);
-function getTasksByRequesterID($requester_id)
+function getTasksByRequesterID($user_id)
 {
     global $pdo;
-    $stmt = $pdo->prepare("SELECT t.*, 
-                                  r.name as runner_name,
-                                  rev.rating, 
-                                  rev.comment
-                           FROM Tasks t
-                           LEFT JOIN Users r ON t.runner_id = r.user_id
-                           LEFT JOIN Reviews rev ON t.task_id = rev.task_id AND rev.reviewer_id = ?
-                           WHERE t.requester_id=? 
-                           ORDER BY t.created_at DESC");
-    $stmt->execute([$requester_id, $requester_id]);
-    return $stmt->fetchAll();
+    $stmt = $pdo->prepare("
+        SELECT t.*, 
+               u_runner.name AS runner_name, 
+               r.review_id, r.rating, r.comment
+        FROM Tasks t
+        LEFT JOIN Users u_runner ON t.runner_id = u_runner.user_id
+        LEFT JOIN Reviews r ON t.task_id = r.task_id AND r.reviewer_id = ? AND r.role = 'runner'
+        WHERE t.requester_id = ?
+        ORDER BY t.created_at DESC
+    ");
+    $stmt->execute([$user_id, $user_id]);
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 
 // 透過執行者ID取得其所有任務
 // usage: $tasks = getTasksByRunnerID($_SESSION['user']['user_id']);
-function getTasksByRunnerID($runner_id)
+function getTasksByRunnerID($user_id)
 {
     global $pdo;
-    $stmt = $pdo->prepare("SELECT t.*, 
-                                  req.name as requester_name, 
-                                  req.rating_as_requester,
-                                  rev.rating, 
-                                  rev.comment
-                           FROM Tasks t
-                           JOIN Users req ON t.requester_id = req.user_id
-                           LEFT JOIN Reviews rev ON t.task_id = rev.task_id AND rev.reviewer_id = ?
-                           WHERE t.runner_id=? 
-                           ORDER BY t.created_at DESC");
-    $stmt->execute([$runner_id, $runner_id]);
-    return $stmt->fetchAll();
+    $stmt = $pdo->prepare("
+        SELECT t.*, 
+               u_requester.name AS requester_name, 
+               r.review_id, r.rating, r.comment
+        FROM Tasks t
+        LEFT JOIN Users u_requester ON t.requester_id = u_requester.user_id
+        LEFT JOIN Reviews r ON t.task_id = r.task_id AND r.reviewer_id = ? AND r.role = 'requester'
+        WHERE t.runner_id = ?
+        ORDER BY t.created_at DESC
+    ");
+    $stmt->execute([$user_id, $user_id]);
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 
 // runner 申請接取任務

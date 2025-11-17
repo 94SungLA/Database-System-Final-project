@@ -98,6 +98,7 @@
             <input type="hidden" name="reviewee_id" id="modalRevieweeId">
             <input type="hidden" name="role" id="modalRole">
             <input type="hidden" name="rating" id="modalRating" value="">
+            <input type="hidden" name="review_id" id="modalReviewId" value="">
             <div class="mb-4">
                 <div id="starRating" class="flex space-x-2 justify-center">
                     <div class="star-container" data-rating="1">
@@ -147,10 +148,22 @@
         let currentRating = 0;
 
         // Open modal with animation
-        function openModal(taskId, revieweeId, role) {
+        function openModal(taskId, revieweeId, role, currentRating = 0, currentComment = '', reviewId = '') {
             document.getElementById('modalTaskId').value = taskId;
             document.getElementById('modalRevieweeId').value = revieweeId;
             document.getElementById('modalRole').value = role;
+            document.getElementById('modalReviewId').value = reviewId;
+            // Pre-fill existing data if editing
+            if (currentRating > 0) {
+                currentRating = parseFloat(currentRating);
+                ratingInput.value = currentRating.toFixed(1);
+                document.getElementById('ratingDisplay').textContent = currentRating.toFixed(1) + ' 分';
+                updateStars(currentRating);
+                updateMessage(currentRating);
+            }
+            if (currentComment) {
+                commentInput.value = currentComment;
+            }
             modal.classList.remove('hidden');
             setTimeout(() => {
                 document.getElementById('modalContent').classList.remove('scale-95', 'opacity-0');
@@ -281,7 +294,10 @@
                 const taskId = this.dataset.taskId;
                 const revieweeId = this.dataset.revieweeId;
                 const role = this.dataset.role;
-                openModal(taskId, revieweeId, role);
+                const reviewId = this.dataset.reviewId || '';
+                const currentRating = this.dataset.rating || 0;
+                const currentComment = this.dataset.comment || '';
+                openModal(taskId, revieweeId, role, currentRating, currentComment, reviewId);
             });
         });
     });

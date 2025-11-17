@@ -108,7 +108,8 @@ INSERT INTO Tasks (
         requester_id,
         runner_id,
         deadline,
-        location_tags
+        location_tags,
+        completed_at
     )
 VALUES (
         '幫我買奶茶',
@@ -119,7 +120,8 @@ VALUES (
         1,
         2,
         '2025-11-09 18:00',
-        '基隆, 校門口, 飲料店'
+        '基隆, 校門口, 飲料店',
+        '2025-11-17 17:00'
     ),
     (
         '幫我寄信到郵局',
@@ -130,7 +132,8 @@ VALUES (
         2,
         4,
         '2025-11-10 15:00',
-        '基隆, 郵局'
+        '基隆, 郵局',
+        NULL
     ),
     (
         '幫我拿包裹',
@@ -141,7 +144,8 @@ VALUES (
         1,
         2,
         '2025-11-09 19:00',
-        '宿舍, 超商'
+        '宿舍, 超商',
+        NULL
     );
 
 INSERT INTO Tasks (title, description, tags, reward, status, deadline, location_tags, requester_id)

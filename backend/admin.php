@@ -2,6 +2,39 @@
 require_once "db.php";
 require_once "auth.php";
 
+// 算出總用戶數
+function adminCountTotalUsers() {
+    if (!isAdmin()) {
+        throw new Exception("非管理員無權限");
+    }
+    global $pdo;
+    $stmt = $pdo->query("SELECT count(user_id) as total from users");
+    $row = $stmt->fetch();
+    return $row['total'];
+}
+
+// 算出正在進行中任務數
+function adminCountTasksInProgress() {
+    if (!isAdmin()) {
+        throw new Exception("非管理員無權限");
+    }
+    global $pdo;
+    $stmt = $pdo->query("SELECT count(task_id) as total from tasks where status='in_progress'");
+    $row = $stmt->fetch();
+    return $row['total'];
+}
+
+// 算出今天完成任務件數
+function adminCountTasksCompleteToday() {
+    if (!isAdmin()) {
+        throw new Exception("非管理員無權限");
+    }
+    global $pdo;
+    $stmt = $pdo->query("SELECT count(task_id) as total from tasks where status='completed' AND DATE(completed_at)=CURDATE()");
+    $row = $stmt->fetch();
+    return $row['total'];
+}
+
 // 算出個別任務占比 (管理員專用)
 // usage: $tasksCnt = adminGetTasksCount();
 function adminGetTasksCount() {

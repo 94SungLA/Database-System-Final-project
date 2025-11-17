@@ -198,9 +198,9 @@
             console.log('Current role:', role);
             if (rating >= 4) {
                 if (role === 'requester') {
-                    messageEl.textContent = '🎉 恭喜您接到好任務！真是太有石粒辣！';
+                    messageEl.textContent = '🎉 恭喜您找到好任務！真是太有石粒辣！';
                 } else if (role === 'runner') {
-                    messageEl.textContent = '🎉 恭喜您遇到好幫手！真幸運辣！';
+                    messageEl.textContent = '🎉 恭喜您遇到好幫手！真是太幸運辣！';
                 } else {
                     messageEl.textContent = '🎉 恭喜！';
                 }

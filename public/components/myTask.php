@@ -217,23 +217,43 @@ $filteredTasks = ($statusFilter === 'all')
                                         class="flex items-center gap-2 px-4 py-2 border border-red-600 text-red-600 rounded-lg hover:bg-red-50 transition-colors">
                                         <?= getIcon('cancel') ?> 取消任務
                                     </button>
-                                <?php elseif ($task['status'] === 'completed' && empty($task['rating'])): ?>
-                                    <button class="review-btn flex items-center gap-2 px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition-colors"
-                                        data-task-id="<?= $task['task_id'] ?>"
-                                        data-reviewee-id="<?= $activeTab === 'published' ? $task['runner_id'] : $task['requester_id'] ?>"
-                                        data-role="<?= $activeTab === 'published' ? 'runner' : 'requester' ?>">
-                                        <?= getIcon('star') ?> 評價<?= $activeTab === 'published' ? '執行者' : '發布者' ?>
-                                    </button>
+                                <?php elseif ($task['status'] === 'completed'): ?>
+                                    <?php if (empty($task['rating'])): ?>
+                                        <button class="review-btn flex items-center gap-2 px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition-colors"
+                                            data-task-id="<?= $task['task_id'] ?>"
+                                            data-reviewee-id="<?= $activeTab === 'published' ? $task['runner_id'] : $task['requester_id'] ?>"
+                                            data-role="<?= $activeTab === 'published' ? 'runner' : 'requester' ?>">
+                                            <?= getIcon('star') ?> 評價<?= $activeTab === 'published' ? '執行者' : '發布者' ?>
+                                        </button>
+                                    <?php else: ?>
+                                        <button class="review-btn flex items-center gap-2 px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition-colors"
+                                            data-task-id="<?= $task['task_id'] ?>"
+                                            data-reviewee-id="<?= $activeTab === 'published' ? $task['runner_id'] : $task['requester_id'] ?>"
+                                            data-role="<?= $activeTab === 'published' ? 'runner' : 'requester' ?>"
+                                            data-review-id="<?= $task['review_id'] ?>">
+                                            <?= getIcon('star') ?> 編輯評價
+                                        </button>
+                                    <?php endif; ?>
                                 <?php endif; ?>
                             <?php else: // Accepted Tab 
                             ?>
-                                <?php if ($task['status'] === 'completed' && empty($task['rating'])): ?>
-                                    <button class="review-btn flex items-center gap-2 px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition-colors"
-                                        data-task-id="<?= $task['task_id'] ?>"
-                                        data-reviewee-id="<?= $activeTab === 'published' ? $task['runner_id'] : $task['requester_id'] ?>"
-                                        data-role="<?= $activeTab === 'published' ? 'runner' : 'requester' ?>">
-                                        <?= getIcon('star') ?> 評價<?= $activeTab === 'published' ? '執行者' : '發布者' ?>
-                                    </button>
+                                <?php if ($task['status'] === 'completed'): ?>
+                                    <?php if (empty($task['rating'])): ?>
+                                        <button class="review-btn flex items-center gap-2 px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition-colors"
+                                            data-task-id="<?= $task['task_id'] ?>"
+                                            data-reviewee-id="<?= $activeTab === 'published' ? $task['runner_id'] : $task['requester_id'] ?>"
+                                            data-role="<?= $activeTab === 'published' ? 'runner' : 'requester' ?>">
+                                            <?= getIcon('star') ?> 評價<?= $activeTab === 'published' ? '執行者' : '發布者' ?>
+                                        </button>
+                                    <?php else: ?>
+                                        <button class="review-btn flex items-center gap-2 px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition-colors"
+                                            data-task-id="<?= $task['task_id'] ?>"
+                                            data-reviewee-id="<?= $activeTab === 'published' ? $task['runner_id'] : $task['requester_id'] ?>"
+                                            data-role="<?= $activeTab === 'published' ? 'runner' : 'requester' ?>"
+                                            data-review-id="<?= $task['review_id'] ?>">
+                                            <?= getIcon('star') ?> 編輯評價
+                                        </button>
+                                    <?php endif; ?>
                                 <?php endif; ?>
                             <?php endif; ?>
                         </form>

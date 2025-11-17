@@ -14,13 +14,15 @@ function getOpenTasks()
 }
 
 // 透過任務ID取得任務詳細資訊
-// usage: $task = getTaskById($_GET['id']);
-function getTaskById($id)
+// usage: $task = getTaskAndCommentById($_GET['id']);
+function getTaskAndCommentById($id)
 {
     global $pdo;
-    $stmt = $pdo->prepare("SELECT t.*, rn.name as runner_name, rq.name as requester_name FROM Tasks as t
+    $stmt = $pdo->prepare("SELECT t.*, rn.name as runner_name, rq.name as requester_name, rqrw.review_id as rqrwid, rqrw.rating as rqrt, rqrw.comment as rq_review, rnrw.review_id as rnrwid, rnrw.rating as rnrt, rnrw.comment as rn_review FROM Tasks as t
                                   LEFT JOIN Users as rn on t.runner_id = rn.user_id
                                   LEFT JOIN Users as rq on t.requester_id = rq.user_id
+                                  LEFT JOIN reviews as rqrw on rqrw.role='requester' and rqrw.task_id=t.task_id
+                                  LEFT JOIN reviews as rnrw on rnrw.role='runner' and rnrw.task_id=t.task_id
                                   WHERE t.task_id=?");
     $stmt->execute([$id]);
     return $stmt->fetch();

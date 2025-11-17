@@ -2,33 +2,43 @@
 <style>
     .star {
         color: gold;
+        transition: color 0.2s ease, transform 0.2s ease;
+    }
+
+    .star:hover {
+        color: #ffd700;
+        transform: scale(1.1);
+    }
+
+    .star.selected {
+        color: #ffed4e;
     }
 </style>
 <div id="reviewModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden flex items-center justify-center z-50">
-    <div class="bg-white rounded-lg shadow-lg p-6 w-full max-w-lg mx-4">
-        <h3 class="text-lg font-bold mb-4 text-gray-800">評價任務</h3>
+    <div class="bg-white rounded-xl shadow-2xl p-8 w-full max-w-lg mx-4 transform transition-all duration-300 ease-in-out scale-95 opacity-0" id="modalContent">
+        <h3 class="text-xl font-bold mb-6 text-gray-800 text-center">評價任務</h3>
         <form id="reviewForm">
             <input type="hidden" name="task_id" id="modalTaskId">
             <input type="hidden" name="reviewee_id" id="modalRevieweeId">
             <input type="hidden" name="role" id="modalRole">
             <input type="hidden" name="rating" id="modalRating" value="">
-            <div class="mb-4">
-                <label class="block text-sm font-medium text-gray-700 mb-2">評分 (1-5)</label>
-                <div id="starRating" class="flex space-x-1">
-                    <span class="star text-2xl cursor-pointer" data-rating="1">☆</span>
-                    <span class="star text-2xl cursor-pointer" data-rating="2">☆</span>
-                    <span class="star text-2xl cursor-pointer" data-rating="3">☆</span>
-                    <span class="star text-2xl cursor-pointer" data-rating="4">☆</span>
-                    <span class="star text-2xl cursor-pointer" data-rating="5">☆</span>
+            <div class="mb-6">
+                <label class="block text-sm font-medium text-gray-700 mb-3">評分 (1-5)</label>
+                <div id="starRating" class="flex space-x-2 justify-center">
+                    <span class="star text-3xl cursor-pointer" data-rating="1">☆</span>
+                    <span class="star text-3xl cursor-pointer" data-rating="2">☆</span>
+                    <span class="star text-3xl cursor-pointer" data-rating="3">☆</span>
+                    <span class="star text-3xl cursor-pointer" data-rating="4">☆</span>
+                    <span class="star text-3xl cursor-pointer" data-rating="5">☆</span>
                 </div>
             </div>
-            <div class="mb-4">
-                <label class="block text-sm font-medium text-gray-700 mb-2">評論</label>
-                <textarea name="comment" id="modalComment" rows="3" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" placeholder="請輸入評論"></textarea>
+            <div class="mb-6">
+                <label class="block text-sm font-medium text-gray-700 mb-3">評論</label>
+                <textarea name="comment" id="modalComment" rows="4" class="mt-1 block w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 resize-none" placeholder="請輸入評論"></textarea>
             </div>
-            <div class="flex justify-end gap-2">
-                <button type="button" id="closeModal" class="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 transition-colors">取消</button>
-                <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">提交</button>
+            <div class="flex justify-end gap-3">
+                <button type="button" id="closeModal" class="px-6 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 transition-all duration-200 font-medium">取消</button>
+                <button type="submit" class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all duration-200 font-medium shadow-md">提交</button>
             </div>
         </form>
     </div>
@@ -43,19 +53,30 @@
         const ratingInput = document.getElementById('modalRating');
         const commentInput = document.getElementById('modalComment');
 
-        // Open modal
+        // Open modal with animation
         function openModal(taskId, revieweeId, role) {
             document.getElementById('modalTaskId').value = taskId;
             document.getElementById('modalRevieweeId').value = revieweeId;
             document.getElementById('modalRole').value = role;
             modal.classList.remove('hidden');
+            setTimeout(() => {
+                document.getElementById('modalContent').classList.remove('scale-95', 'opacity-0');
+                document.getElementById('modalContent').classList.add('scale-100', 'opacity-100');
+            }, 10);
         }
 
-        // Close modal
+        // Close modal with animation
         function closeModal() {
-            modal.classList.add('hidden');
-            form.reset();
-            stars.forEach(s => s.textContent = '☆');
+            document.getElementById('modalContent').classList.remove('scale-100', 'opacity-100');
+            document.getElementById('modalContent').classList.add('scale-95', 'opacity-0');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                form.reset();
+                stars.forEach(s => {
+                    s.textContent = '☆';
+                    s.classList.remove('selected');
+                });
+            }, 300);
         }
 
         closeBtn.addEventListener('click', closeModal);
@@ -95,13 +116,19 @@
                 });
         });
 
-        // Handle star rating
+        // Handle star rating with visual feedback
         stars.forEach(star => {
             star.addEventListener('click', function() {
                 const rating = this.dataset.rating;
                 ratingInput.value = rating;
                 stars.forEach(s => {
-                    s.textContent = s.dataset.rating <= rating ? '★' : '☆';
+                    if (s.dataset.rating <= rating) {
+                        s.textContent = '★';
+                        s.classList.add('selected');
+                    } else {
+                        s.textContent = '☆';
+                        s.classList.remove('selected');
+                    }
                 });
             });
         });

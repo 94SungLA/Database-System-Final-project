@@ -93,6 +93,21 @@
                     </button>
                 </form>
             <?php endif; ?>
+            <?php if ($task['status'] === 'confirming' && $task['requester_id'] == $_SESSION['user']['user_id']): ?>
+                <form action="../backend/task_handler.php" method="POST" class="contents">
+                    <input type="hidden" name="task_id" value="<?= $taskId ?>">
+                    <input type="hidden" name="runner_id" value="<?= htmlspecialchars($task['runner_id'] ?? '') ?>">
+                    <input type="hidden" name="source" value="task_detail">
+                    <button type="submit" name="action" value="approve" class="px-8 py-4 bg-gradient-to-r from-green-500 to-teal-500 text-white rounded-xl hover:from-green-600 hover:to-teal-600 transition-all duration-300 flex items-center shadow-lg transform hover:scale-110">
+                        <span class="mr-3 text-xl">✅</span>
+                        批准申請
+                    </button>
+                    <button type="submit" name="action" value="reject" class="px-8 py-4 bg-gradient-to-r from-red-500 to-pink-500 text-white rounded-xl hover:from-red-600 hover:to-pink-600 transition-all duration-300 flex items-center shadow-lg transform hover:scale-110">
+                        <span class="mr-3 text-xl">❌</span>
+                        拒絕申請
+                    </button>
+                </form>
+            <?php endif; ?>
         </div>
     </div>
 </body>

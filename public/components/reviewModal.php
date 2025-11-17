@@ -26,8 +26,39 @@
         border-radius: 20px;
     }
 
-    #starRating .star {
+    .star-container {
+        position: relative;
+        display: inline-block;
+        width: 2.5rem;
+        height: 2.5rem;
+        cursor: pointer;
+    }
+
+    .star-bg,
+    .star-fg {
+        position: absolute;
+        top: 0;
+        left: 0;
         font-size: 2.5rem;
+        line-height: 1;
+        transition: none;
+    }
+
+    .star-bg {
+        color: gold;
+    }
+
+    .star-fg {
+        color: #ffed4e;
+        width: 0%;
+        overflow: hidden;
+        text-shadow: 0 0 15px #ffed4e;
+    }
+
+    .star-container:hover .star-bg {
+        color: #ffd700;
+        transform: scale(1.2);
+        text-shadow: 0 0 10px #ffd700;
     }
 
     textarea {
@@ -51,27 +82,48 @@
         transform: translateY(-2px);
         box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
     }
+
+    #ratingDisplay {
+        text-align: center;
+        font-size: 1.2rem;
+        font-weight: 600;
+        color: #3b82f6;
+        margin-top: 0.5rem;
+    }
 </style>
 <div id="reviewModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden flex items-center justify-center z-50">
-    <div class="bg-white rounded-xl shadow-2xl p-8 w-full max-w-lg mx-4 transform transition-all duration-300 ease-in-out scale-95 opacity-0" id="modalContent">
-        <h3 class="text-xl font-bold mb-6 text-gray-800 text-center">評價任務</h3>
+    <div class="bg-white rounded-xl shadow-2xl p-6 w-full max-w-lg mx-4 transform transition-all duration-300 ease-in-out scale-95 opacity-0" id="modalContent">
         <form id="reviewForm">
             <input type="hidden" name="task_id" id="modalTaskId">
             <input type="hidden" name="reviewee_id" id="modalRevieweeId">
             <input type="hidden" name="role" id="modalRole">
             <input type="hidden" name="rating" id="modalRating" value="">
-            <div class="mb-6">
-                <label class="block text-sm font-medium text-gray-700 mb-3">評分 (1-5)</label>
+            <div class="mb-4">
                 <div id="starRating" class="flex space-x-2 justify-center">
-                    <span class="star text-3xl cursor-pointer" data-rating="1">☆</span>
-                    <span class="star text-3xl cursor-pointer" data-rating="2">☆</span>
-                    <span class="star text-3xl cursor-pointer" data-rating="3">☆</span>
-                    <span class="star text-3xl cursor-pointer" data-rating="4">☆</span>
-                    <span class="star text-3xl cursor-pointer" data-rating="5">☆</span>
+                    <div class="star-container" data-rating="1">
+                        <span class="star-bg">☆</span>
+                        <span class="star-fg">★</span>
+                    </div>
+                    <div class="star-container" data-rating="2">
+                        <span class="star-bg">☆</span>
+                        <span class="star-fg">★</span>
+                    </div>
+                    <div class="star-container" data-rating="3">
+                        <span class="star-bg">☆</span>
+                        <span class="star-fg">★</span>
+                    </div>
+                    <div class="star-container" data-rating="4">
+                        <span class="star-bg">☆</span>
+                        <span class="star-fg">★</span>
+                    </div>
+                    <div class="star-container" data-rating="5">
+                        <span class="star-bg">☆</span>
+                        <span class="star-fg">★</span>
+                    </div>
                 </div>
+                <div id="ratingDisplay">0.0 分</div>
             </div>
-            <div class="mb-6">
-                <label class="block text-sm font-medium text-gray-700 mb-3">評論</label>
+            <div class="mb-4">
                 <textarea name="comment" id="modalComment" rows="4" class="mt-1 block w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 resize-none" placeholder="請輸入評論"></textarea>
             </div>
             <div class="flex justify-end gap-3">
@@ -87,9 +139,11 @@
         const modal = document.getElementById('reviewModal');
         const form = document.getElementById('reviewForm');
         const closeBtn = document.getElementById('closeModal');
-        const stars = document.querySelectorAll('.star');
+        const stars = document.querySelectorAll('.star-container');
+        const starRating = document.getElementById('starRating');
         const ratingInput = document.getElementById('modalRating');
         const commentInput = document.getElementById('modalComment');
+        let currentRating = 0;
 
         // Open modal with animation
         function openModal(taskId, revieweeId, role) {
@@ -111,8 +165,7 @@
                 modal.classList.add('hidden');
                 form.reset();
                 stars.forEach(s => {
-                    s.textContent = '☆';
-                    s.classList.remove('selected');
+                    s.querySelector('.star-fg').style.width = '0%';
                 });
             }, 300);
         }
@@ -122,12 +175,54 @@
             if (e.target === modal) closeModal();
         });
 
+        // Function to update star display based on rating
+        function updateStars(rating) {
+            stars.forEach((container, index) => {
+                const fg = container.querySelector('.star-fg');
+                const starIndex = index + 1;
+                if (rating >= starIndex) {
+                    fg.style.width = '100%';
+                } else if (rating >= starIndex - 1) {
+                    fg.style.width = `${(rating - (starIndex - 1)) * 100}%`;
+                } else {
+                    fg.style.width = '0%';
+                }
+            });
+        }
+
+        // Handle mouse events on starRating
+        starRating.addEventListener('mousemove', function(e) {
+            const rect = starRating.getBoundingClientRect();
+            const rating = Math.min(5, Math.max(0, ((e.clientX - rect.left) / rect.width) * 5));
+            ratingInput.value = rating.toFixed(1);
+            document.getElementById('ratingDisplay').textContent = rating.toFixed(1) + ' 分';
+            updateStars(rating);
+        });
+
+        starRating.addEventListener('mouseleave', function() {
+            ratingInput.value = currentRating.toFixed(1);
+            document.getElementById('ratingDisplay').textContent = currentRating.toFixed(1) + ' 分';
+            updateStars(currentRating);
+        });
+
+        starRating.addEventListener('click', function(e) {
+            const rect = starRating.getBoundingClientRect();
+            currentRating = Math.min(5, Math.max(0, ((e.clientX - rect.left) / rect.width) * 5));
+            ratingInput.value = currentRating.toFixed(1);
+            document.getElementById('ratingDisplay').textContent = currentRating.toFixed(1) + ' 分';
+            updateStars(currentRating);
+        });
+
+        // Initialize stars to 0
+        updateStars(0);
+        document.getElementById('ratingDisplay').textContent = '0.0 分';
+
         // Handle form submit
         form.addEventListener('submit', function(e) {
             e.preventDefault();
             // Add validation
-            if (!ratingInput.value || ratingInput.value < 1 || ratingInput.value > 5) {
-                alert('請選擇有效的評分 (1-5)');
+            if (!ratingInput.value || ratingInput.value > 5) {
+                alert('請選擇有效的評分 (0-5)');
                 return;
             }
             if (!commentInput.value.trim()) {
@@ -152,23 +247,6 @@
                 .catch(error => {
                     alert('提交失敗，請重試');
                 });
-        });
-
-        // Handle star rating with visual feedback
-        stars.forEach(star => {
-            star.addEventListener('click', function() {
-                const rating = this.dataset.rating;
-                ratingInput.value = rating;
-                stars.forEach(s => {
-                    if (s.dataset.rating <= rating) {
-                        s.textContent = '★';
-                        s.classList.add('selected');
-                    } else {
-                        s.textContent = '☆';
-                        s.classList.remove('selected');
-                    }
-                });
-            });
         });
 
         // Attach to review buttons (modify existing links to buttons)

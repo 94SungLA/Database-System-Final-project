@@ -180,7 +180,7 @@ $filteredTasks = ($statusFilter === 'all')
                                 <?= getIcon('star') ?>
                                 <span class="text-gray-900 font-semibold">您給出的評價：<?= htmlspecialchars($task['rating']) ?> / 5</span>
                             </div>
-                            <p class="text-gray-700">"<?= htmlspecialchars($task['comment'] ?? '') ?>"</p>
+                            <p class="text-gray-700"><?= htmlspecialchars($task['comment'] ?? '') ?></p>
                         </div>
                     <?php endif; ?>
 

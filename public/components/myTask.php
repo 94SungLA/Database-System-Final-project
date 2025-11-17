@@ -72,7 +72,6 @@ $acceptedFilters = [
     'confirming' => ['label' => '待確認', 'count' => $acceptedStatusCounts['confirming'] ?? 0],
     'in_progress' => ['label' => '進行中', 'count' => $acceptedStatusCounts['in_progress'] ?? 0],
     'completed' => ['label' => '已完成', 'count' => $acceptedStatusCounts['completed'] ?? 0],
-    'cancelled' => ['label' => '已取消', 'count' => $acceptedStatusCounts['cancelled'] ?? 0],
 ];
 
 $currentTasks = ($activeTab === 'published') ? $asRequester : $asRunner;
@@ -86,6 +85,19 @@ $filteredTasks = ($statusFilter === 'all')
 ?>
 
 <div>
+    <?php if (isset($_SESSION['message'])): ?>
+        <div class="mb-4 p-4 bg-green-100 border border-green-400 text-green-700 rounded">
+            <?= htmlspecialchars($_SESSION['message']) ?>
+        </div>
+        <?php unset($_SESSION['message']); ?>
+    <?php endif; ?>
+    <?php if (isset($_SESSION['error'])): ?>
+        <div class="mb-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded">
+            <?= htmlspecialchars($_SESSION['error']) ?>
+        </div>
+        <?php unset($_SESSION['error']); ?>
+    <?php endif; ?>
+
     <div class="mb-6">
         <h2 class="text-2xl font-bold text-gray-900 mb-2">我的任務</h2>
         <p class="text-gray-600">管理您發布和接取的任務</p>
@@ -180,7 +192,7 @@ $filteredTasks = ($statusFilter === 'all')
                             查看詳情
                         </a>
 
-                        <form action="/backend/task_handler.php" method="POST" class="contents">
+                        <form action="/Database-System-Final-project/backend/task_handler.php" method="POST" class="contents">
                             <input type="hidden" name="task_id" value="<?= $task['task_id'] ?>">
                             <input type="hidden" name="runner_id" value="<?= htmlspecialchars($task['runner_id'] ?? '') ?>">
                             <input type="hidden" name="source" value="myTask">
@@ -206,20 +218,15 @@ $filteredTasks = ($statusFilter === 'all')
                                         <?= getIcon('cancel') ?> 取消任務
                                     </button>
                                 <?php elseif ($task['status'] === 'completed' && empty($task['rating'])): ?>
-                                    <a href="/public/review.php?task_id=<?= $task['task_id'] ?>&reviewee_id=<?= $task['runner_id'] ?>&role=runner"
+                                    <a href="/Database-System-Final-project/public/review.php?task_id=<?= $task['task_id'] ?>&reviewee_id=<?= $task['runner_id'] ?>&role=runner"
                                         class="flex items-center gap-2 px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition-colors">
                                         <?= getIcon('star') ?> 評價執行者
                                     </a>
                                 <?php endif; ?>
                             <?php else: // Accepted Tab 
                             ?>
-                                <?php if ($task['status'] === 'in_progress'): ?>
-                                    <button type="submit" name="action" value="complete_by_runner"
-                                        class="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
-                                        <?= getIcon('check') ?> 我已完成
-                                    </button>
-                                <?php elseif ($task['status'] === 'completed' && empty($task['rating'])): ?>
-                                    <a href="/public/review.php?task_id=<?= $task['task_id'] ?>&reviewee_id=<?= $task['requester_id'] ?>&role=requester"
+                                <?php if ($task['status'] === 'completed' && empty($task['rating'])): ?>
+                                    <a href="/Database-System-Final-project/public/review.php?task_id=<?= $task['task_id'] ?>&reviewee_id=<?= $task['requester_id'] ?>&role=requester"
                                         class="flex items-center gap-2 px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition-colors">
                                         <?= getIcon('star') ?> 評價發布者
                                     </a>

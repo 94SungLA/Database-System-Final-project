@@ -88,11 +88,23 @@
                     </td>
                     <td class="px-6 py-4 text-gray-700">NT$ <?= number_format($task['reward']) ?></td>
                     <td class="px-6 py-4">
-                        <div class="flex gap-2">
+                        <div class="flex gap-3">
                             <form method="POST" style="display:inline;">
                                 <input type="hidden" name="task_id" value="<?= $task['task_id'] ?>">
                                 <button name="viewTaskDetail" class="text-blue-600 hover:text-blue-700">查看</button>
                             </form>
+                            <?php if (in_array($task['status'], ['open', 'confirming'])): ?>
+                              <form method="POST" style="display:inline;">
+                                  <input type="hidden" name="task_id" value="<?= $task['task_id'] ?>">
+                                  <input type="hidden" name="requester_id" value="<?= $task['requester_id'] ?>">
+                                  <button
+                                      name="adminCancelTask"
+                                      class="text-orange-400 hover:text-orange-500"
+                                  >
+                                      取消
+                                  </button>
+                              </form>
+                            <?php endif; ?>
                             <!-- 刪除 -->
                             <form method="POST" action="<?= htmlspecialchars($_SERVER['REQUEST_URI']); ?>" style="display: contents;">
                                 <input type="hidden" name="task_id" value="<?= $task['task_id'] ?>">
@@ -238,17 +250,22 @@
 
             <!-- 保留取消任務 -->
             <?php if (in_array($selectedTask['status'], ['open', 'confirming'])): ?>
-                  <form method="POST" class="flex-1">
-                      <input type="hidden" name="task_id" value="<?= $selectedTask['task_id'] ?>">
-                      <input type="hidden" name="requester_id" value="<?= $selectedTask['requester_id'] ?>">
-                      <button
-                          name="adminCancelTask"
-                          class="w-full bg-red-600 text-white py-2 rounded-lg hover:bg-red-700 transition-colors"
-                      >
-                          取消任務
-                      </button>
-                  </form>
-              <?php endif; ?>
+              <form method="POST" class="flex-1">
+                  <input type="hidden" name="task_id" value="<?= $selectedTask['task_id'] ?>">
+                  <input type="hidden" name="requester_id" value="<?= $selectedTask['requester_id'] ?>">
+                  <button
+                      name="adminCancelTask"
+                      class="w-full bg-blue-400 text-white py-2 rounded-lg hover:bg-blue-500 transition-colors"
+                  >
+                      取消任務
+                  </button>
+              </form>
+            <?php endif; ?>
+
+            <form method="POST" action="<?= htmlspecialchars($_SERVER['REQUEST_URI']); ?>" class="flex flex-1">
+              <input type="hidden" name="task_id" value="<?= $selectedTask['task_id'] ?>">
+              <button name="deleteTaskByTaskId" class="w-full py-2 rounded-lg bg-red-400 text-gray-900 hover:bg-red-500 text-center text-base" style="border:none; cursor:pointer;">刪除</button>
+            </form>
 
             <form method="POST" style="display:inline-flex; flex:1;">
               <button

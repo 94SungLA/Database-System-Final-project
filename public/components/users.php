@@ -34,6 +34,7 @@
     }
 
     $ratingAsNull = '(*´･д･)?';
+    $adminRating = 'OVOb';
 ?>
 
 <!-- Users Tab -->
@@ -77,7 +78,11 @@
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4 text-yellow-500">
                                     <path fill-rule="evenodd" d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.006 5.404.434c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.434 2.082-5.005Z" clip-rule="evenodd" />
                                 </svg>
-                                <?= $user['rating_as_runner'] !== null ? $user['rating_as_runner'] : $ratingAsNull ?>
+                                <?php if ($user['is_admin']): ?>
+                                    <?= $adminRating ?>
+                                <?php else: ?>
+                                    <?= $user['rating_as_runner'] !== null ? $user['rating_as_runner'] : $ratingAsNull ?>
+                                <?php endif; ?>
                             </div>
                         </td>
                         <td class="px-6 py-4 text-left text-gray-700">
@@ -85,7 +90,11 @@
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4 text-yellow-500">
                                     <path fill-rule="evenodd" d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.006 5.404.434c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.434 2.082-5.005Z" clip-rule="evenodd" />
                                 </svg>
-                                <?= $user['rating_as_requester'] !== null ? $user['rating_as_requester'] : $ratingAsNull ?>
+                                <?php if ($user['is_admin']): ?>
+                                    <?= $adminRating ?>
+                                <?php else: ?>
+                                    <?= $user['rating_as_requester'] !== null ? $user['rating_as_requester'] : $ratingAsNull ?>
+                                <?php endif; ?>
                             </div>
                         </td>
                         <td class="px-6 py-4 text-gray-700"><?= $user['tasksAsRunner'] ?></td>
@@ -113,20 +122,22 @@
                                     <input type="hidden" name="userTaskRunnerComplete" value="<?= $user['tasksAsRunner'] ?>">
                                     <button name="viewUserDetail" class="text-blue-600 hover:text-blue-700">查看</button>
                                 </form>
-                                <?php if ($user['is_banned'] == 0): ?>
-                                    <!-- 停權 -->
-                                    <form method="POST" action="<?= htmlspecialchars($_SERVER['REQUEST_URI']); ?>" style="display: contents;">
-                                        <input type="hidden" name="user_id" value="<?= $user['user_id'] ?>">
-                                        <input type="hidden" name="action" value="ban">
-                                        <button name="banAndUnban" class="text-red-600 hover:text-red-700">停權</button>
-                                    </form>
-                                <?php else: ?>
-                                    <!-- 解除 -->
-                                    <form method="POST" action="<?= htmlspecialchars($_SERVER['REQUEST_URI']); ?>" style="display: contents;">
-                                        <input type="hidden" name="user_id" value="<?= $user['user_id'] ?>">
-                                        <input type="hidden" name="action" value="unban">
-                                        <button name="banAndUnban" class="text-green-600 hover:text-green-700">解除</button>
-                                    </form>
+                                <?php if($user['is_admin'] != true): ?>
+                                    <?php if ($user['is_banned'] == 0): ?>
+                                        <!-- 停權 -->
+                                        <form method="POST" action="<?= htmlspecialchars($_SERVER['REQUEST_URI']); ?>" style="display: contents;">
+                                            <input type="hidden" name="user_id" value="<?= $user['user_id'] ?>">
+                                            <input type="hidden" name="action" value="ban">
+                                            <button name="banAndUnban" class="text-red-600 hover:text-red-700">停權</button>
+                                        </form>
+                                    <?php else: ?>
+                                        <!-- 解除 -->
+                                        <form method="POST" action="<?= htmlspecialchars($_SERVER['REQUEST_URI']); ?>" style="display: contents;">
+                                            <input type="hidden" name="user_id" value="<?= $user['user_id'] ?>">
+                                            <input type="hidden" name="action" value="unban">
+                                            <button name="banAndUnban" class="text-green-600 hover:text-green-700">解除</button>
+                                        </form>
+                                    <?php endif; ?>
                                 <?php endif; ?>
                             </div>
                         </td>
@@ -240,34 +251,36 @@
 
                 <!-- Actions -->
                 <div class="flex gap-3 pt-6 border-t border-gray-200">
-                    <form method="POST" style="flex:1;">
-                        <input type="hidden" name="user_id" value="<?= $selectedUser['user_id'] ?>">
-                        <?php if ($selectedUser['is_banned'] == 0): ?>
-                            <input type="hidden" name="action" value="ban">
-                            <button 
-                                name="banAndUnbanInUserDetail"
-                                class="w-full h-full py-2 rounded-lg bg-red-600 text-white hover:bg-red-700 flex items-center justify-center"
-                                style="border:none; cursor:pointer;"
-                            >
-                                停權此用戶
-                            </button>
-                        <?php else: ?>
-                            <input type="hidden" name="action" value="unban">
-                            <button 
-                                name="banAndUnbanInUserDetail"
-                                class="w-full h-full py-2 rounded-lg bg-green-600 text-white hover:bg-green-700 flex items-center justify-center"
-                                style="border:none; cursor:pointer;"
-                            >
-                                解除停權
-                            </button>
-                        <?php endif; ?>
-                    </form>
+                    <?php $showBanButton = ($selectedUser['is_admin'] != true); ?>
+                    <?php if ($showBanButton): ?>
+                        <!-- 左側停權/解除停權按鈕 -->
+                        <form method="POST" style="flex:1;">
+                            <input type="hidden" name="user_id" value="<?= $selectedUser['user_id'] ?>">
+                            <?php if ($selectedUser['is_banned'] == 0): ?>
+                                <input type="hidden" name="action" value="ban">
+                                <button 
+                                    name="banAndUnbanInUserDetail"
+                                    class="w-full h-full py-2 rounded-lg bg-red-600 text-white hover:bg-red-700 flex items-center justify-center"
+                                >
+                                    停權此用戶
+                                </button>
+                            <?php else: ?>
+                                <input type="hidden" name="action" value="unban">
+                                <button 
+                                    name="banAndUnbanInUserDetail"
+                                    class="w-full h-full py-2 rounded-lg bg-green-600 text-white hover:bg-green-700 flex items-center justify-center"
+                                >
+                                    解除停權
+                                </button>
+                            <?php endif; ?>
+                        </form>
+                    <?php endif; ?>
 
-                    <form method="POST" style="display:inline-flex; flex:1;">
+                    <!-- 右側關閉按鈕，若沒有左側按鈕則自動滿版 -->
+                    <form method="POST" style="<?= $showBanButton ? 'flex:1;' : 'flex:1 0 100%;' ?>">
                         <button
                             name="closeUserDetail"
                             class="w-full py-2 rounded-lg bg-gray-200 text-gray-900 hover:bg-gray-300 text-center"
-                            style="border:none; cursor:pointer;"
                         >
                             關閉
                         </button>

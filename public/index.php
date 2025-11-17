@@ -2,11 +2,21 @@
 session_start();
 require_once "../backend/auth.php";
 require_once "../backend/user.php";
+require_once "../backend/task.php"; // 新增：引入 task.php 以計算確認中任務數量
 requireLogin();
 
 // 統一定義 activeTab，避免重複
 $activeTab = $_GET['tab'] ?? (isAdmin() ? 'admin' : 'taskboard');
 $taskId = isset($_GET['task_id']) ? (int)$_GET['task_id'] : null;
+
+// 計算用戶作為請求者的確認中任務數量
+$user_id = $_SESSION["user"]["user_id"];
+$confirmingTasks = array_filter(getTasksByRequesterID($user_id), fn($task) => $task['status'] === 'confirming');
+$confirmingCount = count($confirmingTasks);
+
+// 計算用戶作為執行者的進行中任務數量
+$inProgressTasks = array_filter(getTasksByRunnerID($user_id), fn($task) => $task['status'] === 'in_progress');
+$inProgressCount = count($inProgressTasks);
 
 ?>
 <!DOCTYPE html>
@@ -120,6 +130,16 @@ $taskId = isset($_GET['task_id']) ? (int)$_GET['task_id'] : null;
                             <!-- Icon -->
                             <?= $tab['icon'] ?>
                             <?= $tab['label'] ?>
+                            <?php if ($tab['id'] === 'mytasks' && $confirmingCount > 0): ?>
+                                <span class="ml-1 px-2 py-1 bg-red-500 text-white text-xs rounded-full">
+                                    <?= $confirmingCount ?>
+                                </span>
+                            <?php endif; ?>
+                            <?php if ($tab['id'] === 'mytasks' && $inProgressCount > 0): ?>
+                                <span class="ml-1 px-2 py-1 bg-orange-500 text-white text-xs rounded-full">
+                                    <?= $inProgressCount ?>
+                                </span>
+                            <?php endif; ?>
                         </a>
                     <?php endforeach; ?>
                 <?php endif; ?>
@@ -132,11 +152,6 @@ $taskId = isset($_GET['task_id']) ? (int)$_GET['task_id'] : null;
 
         <?php if (!isAdmin()): ?>
             <?php if ($taskId): ?>
-                <div class="mb-4">
-                    <a href="index.php?tab=taskboard" class="inline-flex items-center px-3 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300">
-                        ← 返回任務列表
-                    </a>
-                </div>
                 <?php include "task_detail.php"; ?>
             <?php else: ?>
                 <?php if ($activeTab === 'taskboard'): ?>

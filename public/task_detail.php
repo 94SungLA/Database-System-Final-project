@@ -46,11 +46,17 @@
         'cancelled' => '已取消'
     ];
     ?>
-    <div class="bg-gradient-to-br from-blue-50 via-indigo-50 to-white shadow-2xl rounded-2xl p-10 border border-gray-300 hover:shadow-3xl transition-all duration-500 transform hover:scale-105">
-        <h2 class="text-4xl font-extrabold mb-8 text-gray-900 flex items-center animate-pulse">
-            <span class="mr-4 text-5xl">📋</span>
-            <?= htmlspecialchars($task['title']) ?>
-        </h2>
+    <div class="bg-gradient-to-br from-blue-50 via-indigo-50 to-white shadow-2xl rounded-2xl p-10 border border-gray-300 hover:shadow-3xl transition-all duration-500 transform hover:scale-105 relative">
+        <div class="grid grid-cols-3 items-center mb-8">
+            <button onclick="history.back()" class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors duration-300 shadow-lg justify-self-start">
+                ← 回到上一頁
+            </button>
+            <h2 class="text-4xl font-extrabold text-gray-900 flex items-center animate-pulse text-center justify-self-center col-span-1">
+                <span class="mr-4 text-5xl">📋</span>
+                <?= htmlspecialchars($task['title']) ?>
+            </h2>
+            <div></div>
+        </div>
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-10">
             <div class="bg-gradient-to-r from-gray-50 to-gray-100 p-8 rounded-xl shadow-lg border-l-4 border-blue-500 hover:shadow-xl transition-shadow duration-300">
                 <h3 class="font-bold text-gray-800 mb-6 flex items-center text-xl">

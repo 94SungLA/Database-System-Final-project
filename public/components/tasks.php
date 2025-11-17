@@ -1,27 +1,53 @@
 <?php
-require_once "../backend/admin.php";
-// 假設 $tasks 來自資料庫查詢，例如：
-$tasks = adminGetAllTasks();
-var_dump($tasks);
+    require_once "../backend/admin.php";
+    require_once "../backend/task.php";
+    // 假設 $tasks 來自資料庫查詢，例如：
+    $tasks = adminGetAllTasks();
 
-$statusColors = [
-    'open' => 'bg-yellow-500',
-    'confirming' => 'bg-violet-500',
-    'in_progress' => 'bg-blue-500',
-    'completed' => 'bg-green-500',
-    'cancelled' => 'bg-gray-500',
-];
+    $statusColors = [
+        'open' => 'bg-yellow-500',
+        'confirming' => 'bg-violet-500',
+        'in_progress' => 'bg-blue-500',
+        'completed' => 'bg-green-500',
+        'cancelled' => 'bg-gray-500',
+    ];
 
-function getStatusLabel($status) {
-    return match($status) {
-        'open' => '待接單',
-        'confirming' => '待確認',
-        'in_progress' => '進行中',
-        'completed' => '已完成',
-        'cancelled' => '已取消',
-        default => '未知',
-    };
-}
+    function getStatusLabel($status) {
+        return match($status) {
+            'open' => '待接單',
+            'confirming' => '待確認',
+            'in_progress' => '進行中',
+            'completed' => '已完成',
+            'cancelled' => '已取消',
+            default => '未知',
+        };
+    }
+
+    // 彈出視窗 task-detail
+    $selectedTask = null;
+    if (isset($_POST['viewTaskDetail'])) {
+        $selectedTask = getTaskById($_POST['task_id']);
+    }
+
+    // 關閉彈出視窗 task-detail
+    if (isset($_POST['closeTaskDetail'])) {
+        $selectedTask = null;
+    }
+
+    // 取消任務 (彈出視窗中)
+    if (isset($_POST['adminCancelTask'])) {
+        cancelTask($_POST['task_id'], $_POST['requester_id']);
+        $tasks = adminGetAllTasks();
+        $selectedTask = null;
+    }
+
+    // 刪除任務紀錄
+    if (isset($_POST['deleteTaskByTaskId'])) {
+        adminDeleteTask($_POST['task_id']);
+        $tasks = adminGetAllTasks();
+    }
+
+    $noRunner = 'QAQ';
 ?>
 
 <div class="bg-white rounded-lg border border-gray-200 overflow-hidden">
@@ -46,7 +72,7 @@ function getStatusLabel($status) {
                     <td class="px-6 py-4 text-gray-700"><?= htmlspecialchars($task['requester_name']) ?></td>
                     <td class="px-6 py-4 text-gray-700">
                         <span class="<?= $task['runner_name'] ? '' : 'italic text-gray-400' ?>">
-                            <?= $task['runner_name'] ?: '-' ?>
+                            <?= $task['runner_name'] ?: $noRunner ?>
                         </span>
                     </td>
                     <td class="px-6 py-4">
@@ -57,7 +83,15 @@ function getStatusLabel($status) {
                     <td class="px-6 py-4 text-gray-700">NT$ <?= number_format($task['reward']) ?></td>
                     <td class="px-6 py-4">
                         <div class="flex gap-2">
-                            <a href="view_task.php?id=<?= $task['task_id'] ?>" class="text-blue-600 hover:text-blue-700">查看</a>
+                            <form method="POST" style="display:inline;">
+                                <input type="hidden" name="task_id" value="<?= $task['task_id'] ?>">
+                                <button name="viewTaskDetail" class="text-blue-600 hover:text-blue-700">查看</button>
+                            </form>
+                            <!-- 刪除 -->
+                            <form method="POST" action="<?= htmlspecialchars($_SERVER['REQUEST_URI']); ?>" style="display: contents;">
+                                <input type="hidden" name="task_id" value="<?= $task['task_id'] ?>">
+                                <button name="deleteTaskByTaskId" class="text-red-600 hover:text-red-700">刪除</button>
+                            </form>
                         </div>
                     </td>
                 </tr>
@@ -66,3 +100,114 @@ function getStatusLabel($status) {
         </table>
     </div>
 </div>
+
+<!-- taskDetail -->
+ <?php if (!empty($selectedTask)): ?>
+<div class="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+  <div class="bg-white rounded-lg max-w-2xl w-full max-h-[70vh] overflow-y-auto">
+    <div class="p-6">
+
+      <!-- Header -->
+      <div class="flex justify-between items-start pb-2 mb-4 border-b border-gray-200">
+        <div>
+          <h2 class="text-gray-900 mb-2">任務詳情</h2>
+          <p class="text-gray-600">查看任務完整資訊</p>
+        </div>
+        <form method="POST" style="display:inline;">
+            <button name="closeUserDetail" class="text-3xl text-gray-400 hover:text-4xl hover:font-bold hover:text-red-600 transition-all duration-200">&times;</button>
+        </form>
+      </div>
+
+      <div class="space-y-6">
+        <!-- Task Info -->
+        <div class="pb-2 mb-2 border-b border-gray-200">
+          <h3 class="text-gray-900 mb-2">
+            <?= htmlspecialchars($selectedTask['title']) ?>
+          </h3>
+          <p class="text-gray-700">
+            <?= nl2br(htmlspecialchars($selectedTask['description'])) ?>
+          </p>
+        </div>
+
+        <!-- Grid Info -->
+        <div class="grid grid-cols-2 gap-4">
+
+          <div>
+            <p class="text-gray-600 mb-1">類別</p>
+            <p class="text-gray-900"><?= htmlspecialchars($selectedTask['tags']) ?></p>
+          </div>
+
+          <div>
+            <p class="text-gray-600 mb-1">酬勞</p>
+            <p class="text-gray-900">NT$ <?= htmlspecialchars($selectedTask['reward']) ?></p>
+          </div>
+
+          <div>
+            <p class="text-gray-600 mb-1">委託人</p>
+            <p class="text-gray-900"><?= htmlspecialchars($selectedTask['requester_name']) ?></p>
+          </div>
+
+          <div>
+            <p class="text-gray-600 mb-1">工具人</p>
+            <p class="text-gray-900">
+              <?= $selectedTask['runner_name'] ? htmlspecialchars($selectedTask['runner_name']) : $noRunner ?>
+            </p>
+          </div>
+
+          <div>
+            <p class="text-gray-600 mb-1">建立時間</p>
+            <p class="text-gray-900"><?= htmlspecialchars($selectedTask['created_at']) ?></p>
+          </div>
+
+          <div>
+            <p class="text-gray-600 mb-1">截止時間</p>
+            <p class="text-gray-900"><?= htmlspecialchars($selectedTask['deadline']) ?></p>
+          </div>
+
+          <div>
+            <p class="text-gray-600 mb-1">狀態</p>
+            <span class="px-3 py-1 rounded-full text-white <?= $statusColors[$selectedTask['status']] ?? 'bg-gray-300' ?>">
+                <?= getStatusLabel($selectedTask['status']) ?>
+            </span>
+          </div>
+
+          <div>
+            <p class="text-gray-600 mb-1">地點</p>
+            <p class="text-gray-900"><?= htmlspecialchars($selectedTask['location_tags']) ?></p>
+          </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="flex gap-3 pt-6 border-t border-gray-200">
+
+          <!-- 保留取消任務 -->
+          <?php if (in_array($selectedTask['status'], ['open', 'confirming'])): ?>
+                <form method="POST" class="flex-1">
+                    <input type="hidden" name="task_id" value="<?= $selectedTask['task_id'] ?>">
+                    <input type="hidden" name="requester_id" value="<?= $selectedTask['requester_id'] ?>">
+                    <button
+                        name="adminCancelTask"
+                        class="w-full bg-red-600 text-white py-2 rounded-lg hover:bg-red-700 transition-colors"
+                    >
+                        取消任務
+                    </button>
+                </form>
+            <?php endif; ?>
+
+          <form method="POST" style="display:inline-flex; flex:1;">
+            <button
+                name="closeTaskDetail"
+                class="w-full py-2 rounded-lg bg-gray-200 text-gray-900 hover:bg-gray-300 text-center"
+                style="border:none; cursor:pointer;"
+            >
+                關閉
+            </button>
+        </form>
+
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+<?php endif; ?>

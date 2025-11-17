@@ -132,11 +132,6 @@ $taskId = isset($_GET['task_id']) ? (int)$_GET['task_id'] : null;
 
         <?php if (!isAdmin()): ?>
             <?php if ($taskId): ?>
-                <div class="mb-4">
-                    <a href="index.php?tab=taskboard" class="inline-flex items-center px-3 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300">
-                        ← 返回任務列表
-                    </a>
-                </div>
                 <?php include "task_detail.php"; ?>
             <?php else: ?>
                 <?php if ($activeTab === 'taskboard'): ?>

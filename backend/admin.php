@@ -106,3 +106,14 @@ function adminDeleteTask($task_id)
                                   WHERE task_id = ?;");
     return $stmt->execute([$task_id]);
 }
+
+// 刪除任務管理查看中評論(刪除對 requester/runner 的評論)
+// usage: adminDeleteReview($id);
+function adminDeleteReview($review_id, $role) {
+    if (!isAdmin()) {
+        throw new Exception("非管理員無權限");
+    }
+    global $pdo;
+    $stmt = $pdo->prepare("DELETE FROM Reviews WHERE review_id=? AND role=?");
+    return $stmt->execute([$review_id, $role]);
+}

@@ -25,7 +25,7 @@ if (!$task_id) {
 }
 
 // 獲取任務資訊以檢查權限
-$task = getTaskById($task_id);
+$task = getTaskAndCommentById($task_id);
 if (!$task) {
     header("Location: ../public/index.php");
     exit;

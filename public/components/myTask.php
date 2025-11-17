@@ -218,18 +218,22 @@ $filteredTasks = ($statusFilter === 'all')
                                         <?= getIcon('cancel') ?> 取消任務
                                     </button>
                                 <?php elseif ($task['status'] === 'completed' && empty($task['rating'])): ?>
-                                    <a href="/Database-System-Final-project/public/review.php?task_id=<?= $task['task_id'] ?>&reviewee_id=<?= $task['runner_id'] ?>&role=runner"
-                                        class="flex items-center gap-2 px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition-colors">
-                                        <?= getIcon('star') ?> 評價執行者
-                                    </a>
+                                    <button class="review-btn flex items-center gap-2 px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition-colors"
+                                        data-task-id="<?= $task['task_id'] ?>"
+                                        data-reviewee-id="<?= $activeTab === 'published' ? $task['runner_id'] : $task['requester_id'] ?>"
+                                        data-role="<?= $activeTab === 'published' ? 'runner' : 'requester' ?>">
+                                        <?= getIcon('star') ?> 評價<?= $activeTab === 'published' ? '執行者' : '發布者' ?>
+                                    </button>
                                 <?php endif; ?>
                             <?php else: // Accepted Tab 
                             ?>
                                 <?php if ($task['status'] === 'completed' && empty($task['rating'])): ?>
-                                    <a href="/Database-System-Final-project/public/review.php?task_id=<?= $task['task_id'] ?>&reviewee_id=<?= $task['requester_id'] ?>&role=requester"
-                                        class="flex items-center gap-2 px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition-colors">
-                                        <?= getIcon('star') ?> 評價發布者
-                                    </a>
+                                    <button class="review-btn flex items-center gap-2 px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition-colors"
+                                        data-task-id="<?= $task['task_id'] ?>"
+                                        data-reviewee-id="<?= $activeTab === 'published' ? $task['runner_id'] : $task['requester_id'] ?>"
+                                        data-role="<?= $activeTab === 'published' ? 'runner' : 'requester' ?>">
+                                        <?= getIcon('star') ?> 評價<?= $activeTab === 'published' ? '執行者' : '發布者' ?>
+                                    </button>
                                 <?php endif; ?>
                             <?php endif; ?>
                         </form>
@@ -239,3 +243,6 @@ $filteredTasks = ($statusFilter === 'all')
         <?php endif; ?>
     </div>
 </div>
+
+<!-- Include the review modal component -->
+<?php include __DIR__ . '/reviewModal.php'; ?>

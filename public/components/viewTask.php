@@ -20,7 +20,8 @@ function formatDeadline($deadline)
         </div>
     <?php else: ?>
         <?php foreach ($tasks as $task): ?>
-            <div class="bg-white rounded-lg border border-gray-200 p-6 hover:shadow-lg transition-shadow min-h-[400px] flex flex-col">
+            <a href="index.php?tab=taskboard&task_id=<?= $task['task_id'] ?>"
+                class="bg-white rounded-lg border border-gray-200 p-6 hover:shadow-lg transition-shadow min-h-[400px] flex flex-col block">
                 <div class="mb-6">
                     <h3 class="text-gray-900 font-bold text-lg mb-2"><?= htmlspecialchars($task["title"]) ?></h3>
                     <div class="flex flex-wrap gap-2">
@@ -75,17 +76,16 @@ function formatDeadline($deadline)
                 </div>
 
                 <div class="flex gap-2 mt-auto">
-                    <a href="index.php?tab=taskboard&task_id=<?= $task['task_id'] ?>"
-                        class="flex items-center justify-center gap-2 px-4 py-2 border border-blue-600 text-blue-600 rounded-lg hover:bg-blue-50 transition-colors">
+                    <span class="flex items-center justify-center gap-2 px-4 py-2 border border-blue-600 text-blue-600 rounded-lg hover:bg-blue-50 transition-colors cursor-pointer">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
                             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
                             <circle cx="12" cy="12" r="3"></circle>
                         </svg>
                         查看詳情
-                    </a>
+                    </span>
                 </div>
-            </div>
+            </a>
         <?php endforeach; ?>
     <?php endif; ?>
 </div>

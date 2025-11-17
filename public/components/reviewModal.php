@@ -122,6 +122,7 @@
                     </div>
                 </div>
                 <div id="ratingDisplay">0.0 分</div>
+                <div id="congratulationMessage" class="text-center mt-2 text-lg font-semibold"></div>
             </div>
             <div class="mb-4">
                 <textarea name="comment" id="modalComment" rows="4" class="mt-1 block w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 resize-none" placeholder="請輸入評論"></textarea>
@@ -190,6 +191,26 @@
             });
         }
 
+        // Function to update congratulation message
+        function updateMessage(rating) {
+            const messageEl = document.getElementById('congratulationMessage');
+            const role = document.getElementById('modalRole').value;
+            console.log('Current role:', role);
+            if (rating >= 4) {
+                if (role === 'requester') {
+                    messageEl.textContent = '🎉 恭喜您接到好任務！真是太有石粒辣！';
+                } else if (role === 'runner') {
+                    messageEl.textContent = '🎉 恭喜您遇到好幫手！真幸運辣！';
+                } else {
+                    messageEl.textContent = '🎉 恭喜！';
+                }
+            } else if (rating < 2 && rating > 0) {
+                messageEl.textContent = '😔 很遺憾遇到臭雷包，希望下次更好！';
+            } else {
+                messageEl.textContent = '';
+            }
+        }
+
         // Handle mouse events on starRating
         starRating.addEventListener('mousemove', function(e) {
             const rect = starRating.getBoundingClientRect();
@@ -197,12 +218,14 @@
             ratingInput.value = rating.toFixed(1);
             document.getElementById('ratingDisplay').textContent = rating.toFixed(1) + ' 分';
             updateStars(rating);
+            updateMessage(rating);
         });
 
         starRating.addEventListener('mouseleave', function() {
             ratingInput.value = currentRating.toFixed(1);
             document.getElementById('ratingDisplay').textContent = currentRating.toFixed(1) + ' 分';
             updateStars(currentRating);
+            updateMessage(currentRating);
         });
 
         starRating.addEventListener('click', function(e) {
@@ -211,11 +234,13 @@
             ratingInput.value = currentRating.toFixed(1);
             document.getElementById('ratingDisplay').textContent = currentRating.toFixed(1) + ' 分';
             updateStars(currentRating);
+            updateMessage(currentRating);
         });
 
         // Initialize stars to 0
         updateStars(0);
         document.getElementById('ratingDisplay').textContent = '0.0 分';
+        updateMessage(0);
 
         // Handle form submit
         form.addEventListener('submit', function(e) {

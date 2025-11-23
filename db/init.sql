@@ -81,8 +81,8 @@ CREATE TABLE Tasks (
     task_id INT AUTO_INCREMENT PRIMARY KEY,
     title VARCHAR(100) NOT NULL,
     description TEXT,
-    tags ENUM ('跑腿', '代購', '送件', '其他') DEFAULT '其他',
-    reward INT CHECK (reward > 0),
+    tags ENUM ('跑腿', '代購', '送件', '其他') DEFAULT NULL,
+    reward INT,
     status ENUM (
         'open',
         'confirming',
@@ -101,6 +101,33 @@ CREATE TABLE Tasks (
     FOREIGN KEY (requester_id) REFERENCES Users (user_id),
     FOREIGN KEY (runner_id) REFERENCES Users (user_id)
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci;
+
+-- insert 的評價不能非正整數
+DELIMITER //
+CREATE TRIGGER trg_tasks_check_reward_bi
+BEFORE INSERT ON Tasks
+FOR EACH ROW
+BEGIN
+    IF NEW.reward <= 0 THEN
+        SIGNAL SQLSTATE '45000'
+            SET MESSAGE_TEXT = 'reward must be greater than 0';
+    END IF;
+END//
+DELIMITER ;
+
+-- update 的評價不能非正整數
+DELIMITER //
+CREATE TRIGGER trg_tasks_check_reward_bu
+BEFORE UPDATE ON Tasks
+FOR EACH ROW
+BEGIN
+    IF NEW.reward <= 0 THEN
+        SIGNAL SQLSTATE '45000'
+            SET MESSAGE_TEXT = 'reward must be greater than 0';
+    END IF;
+END//
+DELIMITER ;
+
 INSERT INTO Tasks (
         title,
         description,
@@ -268,16 +295,135 @@ CREATE TABLE Reviews (
     reviewer_id INT NOT NULL,
     reviewee_id INT NOT NULL,
     role ENUM ('requester', 'runner') NOT NULL,
-    rating DECIMAL(2, 1) NOT NULL CHECK (
-        rating >= 0
-        AND rating <= 5
-    ),
+    rating DECIMAL(2, 1) NOT NULL,
     comment TEXT,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (task_id) REFERENCES Tasks (task_id),
     FOREIGN KEY (reviewer_id) REFERENCES Users (user_id),
     FOREIGN KEY (reviewee_id) REFERENCES Users (user_id)
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci;
+
+-- insert, update 用到的 check
+DELIMITER //
+CREATE PROCEDURE check_rating(IN r DECIMAL(2,1))
+BEGIN
+    IF r < 0 OR r > 5 THEN
+        SIGNAL SQLSTATE '45000'
+            SET MESSAGE_TEXT = 'rating must be between 0 and 5';
+    END IF;
+END//
+DELIMITER ;
+
+-- 不可insert out-of-range的評價
+DELIMITER //
+CREATE TRIGGER trg_reviews_check_rating_bi
+BEFORE INSERT ON Reviews
+FOR EACH ROW
+BEGIN
+    CALL check_rating(NEW.rating);
+END//
+DELIMITER ;
+
+-- 不可update out-of-range的評價
+DELIMITER //
+CREATE TRIGGER trg_reviews_check_rating_bu
+BEFORE UPDATE ON Reviews
+FOR EACH ROW
+BEGIN
+    CALL check_rating(NEW.rating);
+END//
+DELIMITER ;
+
+DELIMITER //
+
+-- AFTER INSERT Trigger
+CREATE TRIGGER trg_reviews_after_insert
+AFTER INSERT ON Reviews
+FOR EACH ROW
+BEGIN
+    -- 更新 runner 評分和數量
+    IF NEW.role = 'runner' THEN
+        UPDATE Users u
+        SET rating_as_runner = (
+                SELECT AVG(r.rating)
+                FROM Reviews r
+                WHERE r.reviewee_id = NEW.reviewee_id
+                  AND r.role = 'runner'
+            ),
+            review_count_runner = (
+                SELECT COUNT(*)
+                FROM Reviews r
+                WHERE r.reviewee_id = NEW.reviewee_id
+                  AND r.role = 'runner'
+            )
+        WHERE u.user_id = NEW.reviewee_id;
+    END IF;
+
+    -- 更新 requester 評分和數量
+    IF NEW.role = 'requester' THEN
+        UPDATE Users u
+        SET rating_as_requester = (
+                SELECT AVG(r.rating)
+                FROM Reviews r
+                WHERE r.reviewee_id = NEW.reviewee_id
+                  AND r.role = 'requester'
+            ),
+            review_count_requester = (
+                SELECT COUNT(*)
+                FROM Reviews r
+                WHERE r.reviewee_id = NEW.reviewee_id
+                  AND r.role = 'requester'
+            )
+        WHERE u.user_id = NEW.reviewee_id;
+    END IF;
+END;
+//
+
+-- AFTER UPDATE Trigger
+CREATE TRIGGER trg_reviews_after_update
+AFTER UPDATE ON Reviews
+FOR EACH ROW
+BEGIN
+    -- Runner
+    IF NEW.role = 'runner' THEN
+        UPDATE Users u
+        SET rating_as_runner = (
+                SELECT AVG(r.rating)
+                FROM Reviews r
+                WHERE r.reviewee_id = NEW.reviewee_id
+                  AND r.role = 'runner'
+            ),
+            review_count_runner = (
+                SELECT COUNT(*)
+                FROM Reviews r
+                WHERE r.reviewee_id = NEW.reviewee_id
+                  AND r.role = 'runner'
+            )
+        WHERE u.user_id = NEW.reviewee_id;
+    END IF;
+
+    -- Requester
+    IF NEW.role = 'requester' THEN
+        UPDATE Users u
+        SET rating_as_requester = (
+                SELECT AVG(r.rating)
+                FROM Reviews r
+                WHERE r.reviewee_id = NEW.reviewee_id
+                  AND r.role = 'requester'
+            ),
+            review_count_requester = (
+                SELECT COUNT(*)
+                FROM Reviews r
+                WHERE r.reviewee_id = NEW.reviewee_id
+                  AND r.role = 'requester'
+            )
+        WHERE u.user_id = NEW.reviewee_id;
+    END IF;
+END;
+//
+
+DELIMITER ;
+
 -- sample reviews
 INSERT INTO Reviews (
         task_id,
@@ -289,29 +435,3 @@ INSERT INTO Reviews (
     )
 VALUES (1, 1, 2, 'runner', 5.0, '準時又親切！'),
     (1, 2, 1, 'requester', 4.5, '描述清楚，好合作');
--- update initial ratings after sample reviews
-UPDATE Users u
-SET rating_as_runner = (
-        SELECT AVG(r.rating)
-        FROM Reviews r
-        WHERE r.reviewee_id = u.user_id
-            AND r.role = 'runner'
-    ),
-    review_count_runner = (
-        SELECT COUNT(*)
-        FROM Reviews r
-        WHERE r.reviewee_id = u.user_id
-            AND r.role = 'runner'
-    ),
-    rating_as_requester = (
-        SELECT AVG(r.rating)
-        FROM Reviews r
-        WHERE r.reviewee_id = u.user_id
-            AND r.role = 'requester'
-    ),
-    review_count_requester = (
-        SELECT COUNT(*)
-        FROM Reviews r
-        WHERE r.reviewee_id = u.user_id
-            AND r.role = 'requester'
-    );

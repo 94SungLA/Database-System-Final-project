@@ -30,7 +30,9 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         } elseif ($password !== $confirm_password) {
             $error = "密碼確認不匹配";
         } else {
-            if (createUser($name, $email, $password, $phone)) {
+            if (createUser($name, $email, $password, $phone) === "Email already in use") {
+                $error = "此 Email 已被使用";
+            } elseif (createUser($name, $email, $password, $phone)) {
                 header("Location: login.php");
                 exit;
             } else {
@@ -146,9 +148,9 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             class="btn-hover w-full p-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white border-none rounded-md text-base cursor-pointer transition-all hover:from-blue-600 hover:to-blue-700">
             註冊
         </button>
-        <?php if (!empty($error)) echo "<p class='mt-5 text-sm text-red-500'>$error</p>"; ?>
-        <p class="mt-5 text-sm">已有帳號？<a href="login.php"
-                class="text-blue-500 no-underline hover:underline">登入</a></p>
+        <?php if (!empty($error))
+            echo "<p class='mt-5 text-sm text-red-500'>$error</p>"; ?>
+        <p class="mt-5 text-sm">已有帳號？<a href="login.php" class="text-blue-500 no-underline hover:underline">登入</a></p>
     </form>
 </body>
 

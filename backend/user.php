@@ -20,7 +20,7 @@ function createUser($name, $email, $password, $phone)
     // 避免重複 email
     $existingUser = findUserByEmail($email);
     if ($existingUser) {
-        return false;
+        return "Email already in use";
     }
     return $stmt->execute([$name, $email, password_hash($password, PASSWORD_BCRYPT), $phone]);
 }

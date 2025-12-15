@@ -147,7 +147,7 @@ END
 ```
 
 **trg_reviews_after_insert (After Insert)**
-新增評價後，自動計算並更新使用者的平均評分與評價數量。
+**[AGGREGATE]** 新增評價後，自動計算並更新使用者的平均評分與評價數量。
 ```sql
 CREATE TRIGGER trg_reviews_after_insert
 AFTER INSERT ON Reviews
@@ -172,7 +172,7 @@ END
 ```
 
 **trg_reviews_after_update (After Update)**
-更新評價後，重新計算並更新使用者的平均評分與評價數量。
+**[AGGREGATE]** 更新評價後，重新計算並更新使用者的平均評分與評價數量。
 ```sql
 CREATE TRIGGER trg_reviews_after_update
 AFTER UPDATE ON Reviews
@@ -194,8 +194,8 @@ END
     *   登入/檢查 Email: `SELECT * FROM Users WHERE email=?`
     *   取得使用者資料: `SELECT * FROM Users WHERE user_id=?`
     *   更新資料時檢查 Email 重複: `SELECT user_id FROM Users WHERE email = ? AND user_id != ?`
-    *   (Admin) 統計總用戶數: `SELECT count(user_id) as total from users`
-    *   (Admin) 取得所有使用者列表: `SELECT u.*, ... FROM Users u ...`
+    *   **[AGGREGATE]** (Admin) 統計總用戶數: `SELECT count(user_id) as total from users`
+    *   **[MULTI-JOIN] [AGGREGATE]** (Admin) 取得所有使用者列表: `SELECT u.*, ... FROM Users u ...`
 *   **INSERT**
     *   註冊: `INSERT INTO Users (name, email, password_hash, phone, created_at) VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP)`
 *   **UPDATE**
@@ -206,14 +206,14 @@ END
 (`backend/task.php`, `backend/admin.php`)
 
 *   **SELECT**
-    *   取得公開任務列表: `SELECT t.*, u.name AS requester_name, u.rating_as_requester FROM Tasks t JOIN Users u ... WHERE status='open' ...`
-    *   取得單一任務詳情: `SELECT t.*, ... FROM Tasks as t ... WHERE t.task_id=?`
-    *   取得我發布的任務: `SELECT t.*, ... FROM Tasks t ... WHERE t.requester_id = ? ...`
-    *   取得我接取的任務: `SELECT t.*, ... FROM Tasks t ... WHERE t.runner_id = ? ...`
-    *   (Admin) 統計進行中任務: `SELECT count(task_id) as total from tasks where status='in_progress'`
-    *   (Admin) 統計今日完成任務: `SELECT count(task_id) as total from tasks where status='completed' AND DATE(completed_at)=CURDATE()`
-    *   (Admin) 統計任務分類: `SELECT t.tags AS tag, COUNT(t.task_id) AS num ... FROM Tasks t GROUP BY t.tags`
-    *   (Admin) 取得所有任務: `SELECT t.*, ... FROM Tasks t ...`
+    *   **[JOIN]** 取得公開任務列表: `SELECT t.*, u.name AS requester_name, u.rating_as_requester FROM Tasks t JOIN Users u ... WHERE status='open' ...`
+    *   **[MULTI-JOIN]** 取得單一任務詳情: `SELECT t.*, ... FROM Tasks as t ... WHERE t.task_id=?`
+    *   **[MULTI-JOIN]** 取得我發布的任務: `SELECT t.*, ... FROM Tasks t ... WHERE t.requester_id = ? ...`
+    *   **[MULTI-JOIN]** 取得我接取的任務: `SELECT t.*, ... FROM Tasks t ... WHERE t.runner_id = ? ...`
+    *   **[AGGREGATE]** (Admin) 統計進行中任務: `SELECT count(task_id) as total from tasks where status='in_progress'`
+    *   **[AGGREGATE]** (Admin) 統計今日完成任務: `SELECT count(task_id) as total from tasks where status='completed' AND DATE(completed_at)=CURDATE()`
+    *   **[AGGREGATE]** (Admin) 統計任務分類: `SELECT t.tags AS tag, COUNT(t.task_id) AS num ... FROM Tasks t GROUP BY t.tags`
+    *   **[MULTI-JOIN]** (Admin) 取得所有任務: `SELECT t.*, ... FROM Tasks t ...`
 *   **INSERT**
     *   發布任務: `INSERT INTO Tasks (title, description, tags, reward, deadline, location_tags, requester_id) VALUES (?, ?, ?, ?, ?, ?, ?)`
 *   **UPDATE**
@@ -230,12 +230,12 @@ END
 
 *   **SELECT**
     *   取得被評論者 ID: `SELECT reviewee_id FROM Reviews WHERE review_id = ?`
-    *   取得使用者評論列表: `SELECT r.rating, r.comment, ... FROM Reviews r ... WHERE r.reviewee_id = ? ...`
+    *   **[JOIN]** 取得使用者評論列表: `SELECT r.rating, r.comment, ... FROM Reviews r ... WHERE r.reviewee_id = ? ...`
 *   **INSERT**
     *   新增評論: `INSERT INTO Reviews (task_id, reviewer_id, reviewee_id, role, rating, comment) VALUES (?, ?, ?, ?, ?, ?)`
 *   **UPDATE**
     *   更新評論: `UPDATE Reviews SET rating = ?, comment = ? WHERE review_id = ?`
-    *   手動重新計算評分 (備用邏輯): `UPDATE Users u SET rating_as_runner = ..., review_count_runner = ... WHERE u.user_id = ?`
+    *   **[AGGREGATE]** 手動重新計算評分 (備用邏輯): `UPDATE Users u SET rating_as_runner = ..., review_count_runner = ... WHERE u.user_id = ?`
 *   **DELETE**
     *   刪除任務時連帶刪除評論: `DELETE FROM Reviews WHERE task_id = ?`
     *   (Admin) 刪除評論: `DELETE FROM Reviews WHERE review_id=? AND role=?`

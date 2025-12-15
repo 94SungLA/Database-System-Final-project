@@ -30,9 +30,10 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         } elseif ($password !== $confirm_password) {
             $error = "密碼確認不匹配";
         } else {
-            if (createUser($name, $email, $password, $phone) === "Email already in use") {
+            $result = createUser($name, $email, $password, $phone);
+            if ($result === "Email already in use") {
                 $error = "此 Email 已被使用";
-            } elseif (createUser($name, $email, $password, $phone)) {
+            } elseif ($result === true) {
                 header("Location: login.php");
                 exit;
             } else {

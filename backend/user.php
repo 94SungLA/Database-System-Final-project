@@ -16,13 +16,18 @@ function findUserByEmail($email)
 function createUser($name, $email, $password, $phone)
 {
     global $pdo;
-    $stmt = $pdo->prepare("INSERT INTO Users (name, email, password_hash, phone, created_at) VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP)");
-    // 避免重複 email
-    $existingUser = findUserByEmail($email);
-    if ($existingUser) {
-        return "Email already in use";
+    try {
+        $stmt = $pdo->prepare("INSERT INTO Users (name, email, password_hash, phone, created_at) VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP)");
+        $stmt->execute([$name, $email, password_hash($password, PASSWORD_BCRYPT), $phone]);
+        return true;
+    } catch (PDOException $e) {
+        // MySQL Error 1062: Duplicate entry
+        if ($e->errorInfo[1] == 1062) {
+            return "Email already in use";
+        }
+        // 其他錯誤則拋出或回傳 false
+        return false;
     }
-    return $stmt->execute([$name, $email, password_hash($password, PASSWORD_BCRYPT), $phone]);
 }
 
 // 透過使用者ID取得使用者資料
@@ -41,25 +46,25 @@ function updateUserProfile($user_id, $name, $phone, $email)
 {
     global $pdo;
 
-    // email 改掉時避免與他人重複
-    $sql = "SELECT user_id FROM Users WHERE email = ? AND user_id != ?";
-    $stmt = $pdo->prepare($sql);
-    $stmt->execute([$email, $user_id]);
-    if ($stmt->fetch()) {
-        return "email_taken"; // 代表 email 已被別人使用
+    try {
+        // 更新資料
+        $sql = "UPDATE Users
+                SET name = ?, phone = ?, email = ?
+                WHERE user_id = ?";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute([$name, $phone, $email, $user_id]);
+
+        // 更新 session 中的資料（保持同步）
+        $_SESSION["user"]["name"] = $name;
+        $_SESSION["user"]["phone"] = $phone;
+        $_SESSION["user"]["email"] = $email;
+
+        return "success";
+    } catch (PDOException $e) {
+        // MySQL Error 1062: Duplicate entry
+        if ($e->errorInfo[1] == 1062) {
+            return "email_taken"; // 代表 email 已被別人使用
+        }
+        return "error";
     }
-
-    // 更新資料
-    $sql = "UPDATE Users
-            SET name = ?, phone = ?, email = ?
-            WHERE user_id = ?";
-    $stmt = $pdo->prepare($sql);
-    $stmt->execute([$name, $phone, $email, $user_id]);
-
-    // 更新 session 中的資料（保持同步）
-    $_SESSION["user"]["name"] = $name;
-    $_SESSION["user"]["phone"] = $phone;
-    $_SESSION["user"]["email"] = $email;
-
-    return "success";
 }
